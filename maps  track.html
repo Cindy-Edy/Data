@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maps Lokasi Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lokasi Terkini</h1>
+    <p>Klik pada link di bawah untuk melihat lokasi di Google Maps.</p>
+    <table id="locationTable">
+        <thead>
+            <tr>
+                <th>Waktu</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Link Google Maps</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data akan diisi di sini -->
+        </tbody>
+    </table>
+
+    <script>
+        const apiUrl = 'https://script.google.com/macros/s/AKfycbxe-JCIh5Rk5CnsI_9B2eJ3h_DTMV7NWXCerf6_YXWQ3bY3T97KjkS9bTdy6feJFAVNdA/exec'; // Ganti dengan ID Script Anda
+
+        function fetchLocationData() {
+            console.log('Fetching data from:', apiUrl);
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data received:', data); // Tambahkan log untuk melihat data yang diterima
+                    const tableBody = document.getElementById('locationTable').querySelector('tbody');
+                    tableBody.innerHTML = '';
+
+                    data.forEach(row => {
+                        const newRow = document.createElement('tr');
+                        
+                        const timeCell = document.createElement('td');
+                        timeCell.textContent = row.timestamp;
+                        newRow.appendChild(timeCell);
+                        
+                        const latCell = document.createElement('td');
+                        latCell.textContent = row.latitude;
+                        newRow.appendChild(latCell);
+                        
+                        const lonCell = document.createElement('td');
+                        lonCell.textContent = row.longitude;
+                        newRow.appendChild(lonCell);
+
+                        const linkCell = document.createElement('td');
+                        const googleMapsLink = document.createElement('a');
+                        googleMapsLink.href = row.googleMapsUrl;
+                        googleMapsLink.target = '_blank';
+                        googleMapsLink.textContent = 'Lihat di Google Maps';
+                        linkCell.appendChild(googleMapsLink);
+                        newRow.appendChild(linkCell);
+
+                        tableBody.appendChild(newRow);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        function sendLocationData() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                latitude: -6.200000,  // Ganti dengan data latitude dari perangkat
+                longitude: 106.816666,  // Ganti dengan data longitude dari perangkat
+                googleMapsUrl: 'https://maps.google.com/?q=-6.200000,106.816666'  // Link ke Google Maps
+            };
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.text())
+            .then(result => {
+                console.log('Success:', result);
+                fetchLocationData();  // Refresh data setelah berhasil mengirim data
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Kirim data setiap 1 menit
+        setInterval(sendLocationData, 60000);
+
+        // Ambil data setiap kali halaman dibuka
+        window.onload = fetchLocationData;
+    </script>
+</body>
+</html>
