@@ -47,7 +47,7 @@
         if (navigator.geolocation) {
           intervalId = setInterval(() => {
             navigator.geolocation.getCurrentPosition(sendLocationToSheet, showError);
-          }, 60000); // Mengirim lokasi setiap 1 menit
+          }, 5000); // Mengirim lokasi setiap 5 detik
         } else {
           alert("Geolocation tidak didukung oleh browser ini.");
         }
