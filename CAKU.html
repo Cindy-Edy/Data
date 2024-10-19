@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catatan Keuangan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            background-image: url:'';
+            background-position: center;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        input, button, select {
+            width: 92%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+        .transaction-list {
+            margin-top: 20px;
+        }
+        .transaction {
+            display: flex;
+            justify-content: space-between;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .transaction.expense {
+            color: red;
+        }
+        .transaction.income {
+            color: green;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+        }
+        #logout-btn {
+            background-color: red;
+            color: white;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Form Login -->
+    <div class="container" id="login-container">
+        <h1>Catatan Keuangan</h1>
+        <h2>Pembuat: Edy Sahputra</h2>
+        <input type="text" id="userId" placeholder="Masukkan ID Anda">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- Aplikasi Catatan Keuangan -->
+    <div class="container" id="app-container" style="display:none;">
+        <h1>Catatan Keuangan</h1>
+        <h2>Silahkan <span id="displayUserId"></span></h2>
+
+        <input type="text" id="desc" placeholder="Deskripsi">
+        <input type="number" id="amount" placeholder="Jumlah">
+        <select id="type">
+            <option value="income">Uang Masuk</option>
+            <option value="expense">Uang Keluar</option>
+        </select>
+        <button onclick="addTransaction()">Tambah Transaksi</button>
+
+        <div class="transaction-list" id="transaction-list">
+            <!-- Transaksi akan ditampilkan di sini -->
+        </div>
+
+        <h3>Total Saldo: <span id="total-balance">0</span></h3>
+
+        <button id="logout-btn" onclick="logout()">Logout</button>
+
+        <footer>Catatan Keuangan © 2024 - Edy Sahputra</footer>
+    </div>
+
+    <script>
+        let transactions = [];
+        let currentUserId = '';
+
+        function login() {
+            const userId = document.getElementById('userId').value.trim();
+            if (userId === '') {
+                alert('Mohon masukkan ID Anda.');
+                return;
+            }
+            currentUserId = userId;
+            document.getElementById('displayUserId').innerText = currentUserId;
+            transactions = JSON.parse(localStorage.getItem('transactions_' + currentUserId)) || [];
+            displayTransactions();
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+        }
+
+        function logout() {
+            currentUserId = '';
+            transactions = [];
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('userId').value = '';
+        }
+
+        function addTransaction() {
+            const desc = document.getElementById('desc').value.trim();
+            const amount = parseFloat(document.getElementById('amount').value);
+            const type = document.getElementById('type').value;
+
+            if (desc === '' || isNaN(amount)) {
+                alert('Mohon masukkan deskripsi dan jumlah yang valid.');
+                return;
+            }
+
+            const transaction = {
+                id: Date.now(),
+                desc,
+                amount: type === 'income' ? amount : -amount,
+                type
+            };
+
+            transactions.push(transaction);
+            localStorage.setItem('transactions_' + currentUserId, JSON.stringify(transactions));
+            displayTransactions();
+            clearInputs();
+        }
+
+        function displayTransactions() {
+            const transactionList = document.getElementById('transaction-list');
+            transactionList.innerHTML = '';
+
+            let totalBalance = 0;
+
+            transactions.forEach(transaction => {
+                totalBalance += transaction.amount;
+
+                const transactionItem = document.createElement('div');
+                transactionItem.classList.add('transaction');
+                transactionItem.classList.add(transaction.type);
+                transactionItem.innerHTML = `
+                    <span>${transaction.desc}</span>
+                    <span>${transaction.amount}</span>
+                    <button onclick="deleteTransaction(${transaction.id})" style="background-color: red; color: white;">Hapus</button>
+                `;
+                transactionList.appendChild(transactionItem);
+            });
+
+            document.getElementById('total-balance').innerText = totalBalance;
+        }
+
+        function deleteTransaction(id) {
+            transactions = transactions.filter(transaction => transaction.id !== id);
+            localStorage.setItem('transactions_' + currentUserId, JSON.stringify(transactions));
+            displayTransactions();
+        }
+
+        function clearInputs() {
+            document.getElementById('desc').value = '';
+            document.getElementById('amount').value = '';
+        }
+    </script>
+</body>
+</html>
