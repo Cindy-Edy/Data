@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -57,19 +57,21 @@
     const synth = window.speechSynthesis;
     let recognition;
     let isSindiActive = false; // Status apakah asisten Sindi telah aktif
-    
+
     if ('webkitSpeechRecognition' in window) {
         recognition = new webkitSpeechRecognition();
         recognition.lang = 'id-ID';
-        recognition.continuous = true; // Agar mendengarkan terus menerus
+        recognition.continuous = true; // Mendengarkan terus
         recognition.interimResults = false;
         
         recognition.onstart = function() {
             document.querySelector('.status').textContent = "Mendengarkan...";
+            console.log("Pengenalan suara dimulai");
         };
         
         recognition.onresult = function(event) {
             const result = event.results[event.resultIndex][0].transcript.toLowerCase();
+            console.log("Teks hasil: ", result); // Debugging output
             document.querySelector('.status').textContent = "Anda mengatakan: " + result;
             
             // Cek apakah Sindi sudah diaktifkan atau memerlukan aktivasi
@@ -91,6 +93,7 @@
         
         recognition.onend = function() {
             document.querySelector('.status').textContent = "Klik untuk memulai lagi...";
+            console.log("Pengenalan suara selesai");
         };
     } else {
         document.querySelector('.status').textContent = "Browser tidak mendukung pengenalan suara.";
@@ -99,6 +102,7 @@
     function startListening() {
         if (recognition) {
             recognition.start();
+            console.log("Mulai mendengarkan...");
         }
     }
 
@@ -124,9 +128,6 @@
             speak("Hari ini tanggal " + date);
         } else if (command.includes("cuaca")) {
             speak("Fitur cuaca belum tersedia.");
-        } else if (command.includes("buka kalender")) {
-            speak("Membuka Google Kalender.");
-            window.open("https://calendar.google.com", "_blank");
         } else if (command.includes("siapa namaku")) {
             speak("Nama kamu adalah Edy Sahputra.");
         } else if (command.includes("sapa saya")) {
@@ -139,8 +140,10 @@
     function speak(text) {
         const utterThis = new SpeechSynthesisUtterance(text);
         synth.speak(utterThis);
+        console.log("Teks berbicara: ", text); // Debugging output
     }
 </script>
 
 </body>
 </html>
+          
