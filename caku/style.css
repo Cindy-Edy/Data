@@ -1,28 +1,27 @@
 body {
-    font-family: 'Roboto', sans-serif; /* Menggunakan font Roboto, tambahkan link ke google font jika belum ada */
-    background-color: #f8f9fa; /* Warna latar belakang lembut */
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    color: #495057; /* Warna teks default */
+    color: #495057;
 }
 
 .container {
-    background-color: #fff; /* Latar belakang putih untuk container */
+    background-color: #fff;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Efek bayangan lembut */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     padding: 30px;
     width: 100%;
     max-width: 600px;
-    transition: box-shadow 0.3s ease; /* Efek transisi saat hover */
+    transition: box-shadow 0.3s ease;
 }
 .container:hover {
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
-
 
 h1, h2 {
     text-align: center;
@@ -30,8 +29,8 @@ h1, h2 {
     margin-bottom: 20px;
 }
 
-.form-container{
-  margin-bottom:30px;
+.form-container {
+    margin-bottom: 30px;
 }
 
 .form-container input,
@@ -43,39 +42,35 @@ h1, h2 {
     border: 1px solid #ced4da;
     border-radius: 8px;
     box-sizing: border-box;
-    transition: border-color 0.2s ease;
 }
 
 .form-container input:focus,
 .form-container select:focus {
-    border-color: #007bff; /* Warna border saat fokus */
-    outline: none; /* Hilangkan outline default browser */
+    border-color: #007bff;
+    outline: none;
 }
-
 
 .form-container button {
     display: block;
     width: 35%;
-    bottom: center;
+    margin: 0 auto;
     padding: 12px;
-    background-color: #007bff; /* Warna tombol utama */
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
     font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
 .form-container button:hover {
-    background-color: #0056b3; /* Warna tombol saat hover */
+    background-color: #0056b3;
     transform: translateY(-2px);
 }
 .form-container button:active {
     transform: translateY(0);
 }
 
-/* Style untuk ringkasan */
 .summary-container {
     background-color: #f0f2f5;
     border-radius: 10px;
@@ -83,25 +78,13 @@ h1, h2 {
     margin-bottom: 30px;
 }
 .summary-title {
-    margin-top: 0;
     color: #2a55e0;
 }
-
-.summary-content {
-    padding-left: 10px;
-}
-
-.summary-content p {
-    margin: 8px 0;
-    font-size: 1rem;
-}
-
 .summary-content p span {
     font-weight: 600;
     color: #2a55e0;
 }
 
-/* Style untuk tabel */
 .table-responsive {
     overflow-x: auto;
 }
@@ -111,21 +94,37 @@ table {
     border-collapse: collapse;
     margin-top: 20px;
 }
-
 th, td {
     border: 1px solid #dee2e6;
     padding: 12px;
     text-align: left;
 }
-
 th {
     background-color: #e9ecef;
-    font-weight: 500;
     color: #04172b;
 }
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
 
+.download-button {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 10px auto;
+    display: block;
+    width: 60%;
+}
+.download-button:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
 
-/* Responsive styles */
 @media (max-width: 600px) {
     .container {
         width: 95%;
@@ -134,11 +133,9 @@ th {
     .form-container input,
     .form-container select {
         width: calc(100% - 12px);
-        padding: 10px;
-        margin-bottom:10px;
     }
     .form-container button {
-      padding:10px;
+        padding: 10px;
     }
     table {
         font-size: 0.9em;
