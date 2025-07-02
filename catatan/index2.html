@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencatat Keuangan Pro</title>
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #50e3c2;
+            --income-color: #2ecc71;
+            --expense-color: #e74c3c;
+            --warning-color: #f1c40f;
+            --text-dark: #333;
+            --text-light: #6c757d;
+            --border-color: #e0e0e0;
+            --background-light: #f7f9fc;
+            --background-card: #ffffff;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-family); line-height: 1.7; background-color: var(--background-light); color: var(--text-dark); padding: 20px; }
+        .container { max-width: 700px; margin: 30px auto; }
+        h1, h2 { text-align: center; margin-bottom: 25px; font-weight: 600; color: var(--text-dark); }
+        h1 { font-size: 2em; }
+        h2 { font-size: 1.5em; color: var(--primary-color); margin-top: 40px; }
+
+        .card { background: var(--background-card); padding: 25px; margin-bottom: 25px; border-radius: 10px; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
+        .summary { display: flex; justify-content: space-between; text-align: center; gap: 15px; flex-wrap: wrap; }
+        .summary > div { flex: 1; min-width: 150px; padding: 15px; border-radius: 8px; background-color: var(--background-light); border: 1px solid var(--border-color); }
+        .summary .label { font-weight: 400; color: var(--text-light); display: block; margin-bottom: 8px; font-size: 0.9em; }
+        .summary .label i { margin-right: 5px; font-size: 0.9em; }
+        .summary .amount { font-size: 1.4em; font-weight: 600; letter-spacing: 0.5px; }
+        #total-income { color: var(--income-color); }
+        #total-expense { color: var(--expense-color); }
+        #balance { color: var(--primary-color); }
+        #balance.negative { color: var(--expense-color); }
+
+        form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: end; }
+        form > div { display: flex; flex-direction: column; }
+        form .full-width { grid-column: 1 / -1; }
+        form button { grid-column: 1 / -1; margin-top: 10px; }
+        form label { font-weight: 600; margin-bottom: 6px; font-size: 0.9em; color: var(--text-light); }
+        form input, form select { padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 6px; font-family: var(--font-family); font-size: 1em; width: 100%; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        form input:focus, form select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2); }
+        
+        .btn {
+            padding: 12px 20px; color: white; border: none; border-radius: 6px; cursor: pointer;
+            font-family: var(--font-family); font-weight: 600; font-size: 1em; transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .btn:active { transform: translateY(0); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+        .btn-primary { background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); }
+        .btn-warning { background: linear-gradient(45deg, var(--warning-color), #ffdb58); }
+        .btn-cancel { background: #6c757d; }
+        .btn-sm { padding: 5px 10px; font-size: 0.8em; }
+
+        #transaction-list-container { transition: opacity 0.3s; }
+        #transaction-list { list-style: none; padding: 0; margin-top: 20px; }
+        .transaction-item {
+            background: var(--background-card); border: 1px solid var(--border-color); border-left-width: 5px;
+            padding: 15px 20px; margin-bottom: 12px; display: flex; justify-content: space-between;
+            align-items: center; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease; flex-wrap: wrap;
+        }
+        .transaction-item:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); }
+        .transaction-item.income { border-left-color: var(--income-color); }
+        .transaction-item.expense { border-left-color: var(--expense-color); }
+        .transaction-item .details { flex-grow: 1; margin-right: 15px; word-break: break-word; }
+        .transaction-item .details .description { font-weight: 600; display: block; margin-bottom: 3px; }
+        .transaction-item .details .date { font-size: 0.8em; color: var(--text-light); display: block; }
+        .transaction-item .amount { font-weight: 600; font-size: 1.1em; white-space: nowrap; min-width: 120px; text-align: right; }
+        .transaction-item.income .amount { color: var(--income-color); }
+        .transaction-item.expense .amount { color: var(--expense-color); }
+        
+        .action-buttons { display: flex; gap: 5px; margin-left: 10px; }
+        .action-btn { background-color: transparent; border: none; padding: 5px; border-radius: 50%; cursor: pointer; font-size: 1em; line-height: 1; transition: background-color 0.2s ease, color 0.2s ease; }
+        .action-btn.edit-btn { color: var(--primary-color); }
+        .action-btn.edit-btn:hover { background-color: rgba(74, 144, 226, 0.1); }
+        .action-btn.delete-btn { color: var(--expense-color); }
+        .action-btn.delete-btn:hover { background-color: rgba(231, 76, 60, 0.1); }
+        
+        #history-controls { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; padding: 15px; background-color: var(--background-light); border-radius: 8px; }
+        #history-controls .filter-group { display: flex; align-items: center; gap: 10px; }
+        #history-controls input, #history-controls select { padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); }
+        #empty-state { text-align: center; padding: 40px; color: var(--text-light); display: none; }
+        #empty-state i { font-size: 3em; margin-bottom: 15px; display: block; }
+
+        .extra-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .toast {
+            background-color: #333; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 10px; opacity: 0; transform: translateX(100%); animation: slideIn 0.5s forwards;
+        }
+        .toast.success { background-color: var(--income-color); }
+        .toast.error { background-color: var(--expense-color); }
+        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+        
+        @media (max-width: 650px) {
+            h1 { font-size: 1.8em; } h2 { font-size: 1.3em; } .card { padding: 20px; }
+            .summary { flex-direction: column; gap: 10px; } .summary > div { min-width: unset; width: 100%; }
+            form { grid-template-columns: 1fr; }
+            .transaction-item { flex-direction: column; align-items: flex-start; }
+            .transaction-item .amount { text-align: left; margin: 8px 0; }
+            .action-buttons { align-self: flex-end; }
+            #history-controls { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1><i class="fas fa-wallet" style="color: var(--primary-color);"></i> Pencatat Keuangan</h1>
+        <div class="card">
+            <div class="summary">
+                <div><span class="label"><i class="fas fa-arrow-up" style="color: var(--income-color);"></i> Total Pemasukan</span><span class="amount" id="total-income">Rp 0</span></div>
+                <div><span class="label"><i class="fas fa-arrow-down" style="color: var(--expense-color);"></i> Total Pengeluaran</span><span class="amount" id="total-expense">Rp 0</span></div>
+                <div><span class="label"><i class="fas fa-balance-scale" style="color: var(--primary-color);"></i> Saldo Saat Ini</span><span class="amount" id="balance">Rp 0</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 id="form-title-text"><i class="fas fa-plus-circle"></i> Tambah Transaksi Baru</h2>
+            <form id="transaction-form">
+                <div><label for="type">Jenis:</label><select id="type" required><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option></select></div>
+                <div><label for="date">Tanggal:</label><input type="date" id="date" required></div>
+                <div class="full-width"><label for="description">Deskripsi:</label><input type="text" id="description" placeholder="e.g., Gaji, Belanja..." required></div>
+                <div><label for="amount">Jumlah (Rp):</label><input type="number" id="amount" placeholder="0" min="0" step="any" required></div>
+                <button type="submit" class="btn btn-primary" id="submit-btn"><i class="fas fa-check"></i> Tambah Transaksi</button>
+                <button type="button" class="btn btn-cancel" id="cancel-edit-btn" style="display: none;"><i class="fas fa-times"></i> Batal Edit</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2><i class="fas fa-history"></i> Riwayat Transaksi</h2>
+            <div id="history-controls">
+                <div class="filter-group">
+                    <label for="filter-type">Filter Jenis:</label>
+                    <select id="filter-type">
+                        <option value="all">Semua</option>
+                        <option value="income">Pemasukan</option>
+                        <option value="expense">Pengeluaran</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="search-description">Cari Deskripsi:</label>
+                    <input type="text" id="search-description" placeholder="Ketik untuk mencari...">
+                </div>
+            </div>
+            <div id="transaction-list-container">
+                <ul id="transaction-list"></ul>
+                <div id="empty-state"><i class="fas fa-box-open"></i><p>Belum ada transaksi yang sesuai.</p></div>
+            </div>
+            <div class="extra-actions">
+                <button class="btn btn-primary btn-sm" id="download-jpg-btn"><i class="fas fa-file-image"></i> Unduh Laporan (JPG)</button>
+                <button class="btn btn-primary btn-sm" id="download-csv-btn"><i class="fas fa-file-csv"></i> Unduh Laporan (CSV)</button>
+                <button class="btn btn-danger btn-sm" id="delete-all-btn"><i class="fas fa-trash-alt"></i> Hapus Semua Data</button>
+            </div>
+        </div>
+    </div>
+    <div id="toast-container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- STATE MANAGEMENT ---
+            const state = {
+                transactions: [],
+                editingId: null,
+                filter: { type: 'all', search: '' }
+            };
+
+            // --- DOM ELEMENTS ---
+            const elements = {
+                balance: document.getElementById('balance'),
+                totalIncome: document.getElementById('total-income'),
+                totalExpense: document.getElementById('total-expense'),
+                list: document.getElementById('transaction-list'),
+                form: document.getElementById('transaction-form'),
+                type: document.getElementById('type'),
+                date: document.getElementById('date'),
+                description: document.getElementById('description'),
+                amount: document.getElementById('amount'),
+                submitBtn: document.getElementById('submit-btn'),
+                cancelEditBtn: document.getElementById('cancel-edit-btn'),
+                formTitleText: document.getElementById('form-title-text'),
+                filterType: document.getElementById('filter-type'),
+                searchDescription: document.getElementById('search-description'),
+                emptyState: document.getElementById('empty-state'),
+                listContainer: document.getElementById('transaction-list-container'),
+                downloadJpgBtn: document.getElementById('download-jpg-btn'),
+                downloadCsvBtn: document.getElementById('download-csv-btn'),
+                deleteAllBtn: document.getElementById('delete-all-btn'),
+                toastContainer: document.getElementById('toast-container')
+            };
+
+            // --- HELPER FUNCTIONS ---
+            const formatCurrency = (amount) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+            const formatDate = (dateString) => new Date(dateString + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            const generateID = () => Date.now() + Math.random();
+            
+            const showToast = (message, type = 'success') => {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                elements.toastContainer.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 3500);
+            };
+
+            // --- LOCAL STORAGE ---
+            const saveStateToLocalStorage = () => localStorage.setItem('transactionsPro', JSON.stringify(state.transactions));
+            const loadStateFromLocalStorage = () => {
+                const storedTransactions = localStorage.getItem('transactionsPro');
+                state.transactions = storedTransactions ? JSON.parse(storedTransactions) : [];
+            };
+
+            // --- RENDER FUNCTIONS ---
+            const render = () => {
+                renderSummary();
+                renderList();
+            };
+
+            const renderSummary = () => {
+                const amounts = state.transactions.map(t => t.amount);
+                const totalIncome = amounts.filter(a => a > 0).reduce((sum, a) => sum + a, 0);
+                const totalExpense = amounts.filter(a => a < 0).reduce((sum, a) => sum + a, 0);
+                const balance = totalIncome + totalExpense;
+                
+                elements.totalIncome.textContent = formatCurrency(totalIncome);
+                elements.totalExpense.textContent = formatCurrency(Math.abs(totalExpense));
+                elements.balance.textContent = formatCurrency(balance);
+                elements.balance.classList.toggle('negative', balance < 0);
+            };
+
+            const renderList = () => {
+                elements.list.innerHTML = '';
+                const filteredTransactions = state.transactions
+                    .filter(t => (state.filter.type === 'all' || t.type === state.filter.type))
+                    .filter(t => t.description.toLowerCase().includes(state.filter.search.toLowerCase()))
+                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                if (filteredTransactions.length === 0) {
+                    elements.emptyState.style.display = 'block';
+                } else {
+                    elements.emptyState.style.display = 'none';
+                    filteredTransactions.forEach(t => addTransactionDOM(t));
+                }
+            };
+            
+            const addTransactionDOM = (transaction) => {
+                const item = document.createElement('li');
+                item.className = `transaction-item ${transaction.type}`;
+                item.dataset.id = transaction.id;
+
+                const sign = transaction.type === 'income' ? '+' : '-';
+                item.innerHTML = `
+                    <div class="details">
+                        <span class="description">${transaction.description}</span>
+                        <span class="date">${formatDate(transaction.date)}</span>
+                    </div>
+                    <span class="amount">${sign} ${formatCurrency(Math.abs(transaction.amount))}</span>
+                    <div class="action-buttons">
+                        <button class="action-btn edit-btn" title="Edit Transaksi"><i class="fas fa-pencil-alt"></i></button>
+                        <button class="action-btn delete-btn" title="Hapus Transaksi"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `;
+                elements.list.appendChild(item);
+            };
+
+            // --- ACTIONS ---
+            const addTransaction = (e) => {
+                e.preventDefault();
+                const { type, date, description, amount } = elements;
+                if (!date.value || !description.value.trim() || !amount.value.trim() || parseFloat(amount.value) <= 0) {
+                    showToast('Harap isi semua kolom dengan benar.', 'error'); return;
+                }
+                const newTransaction = {
+                    id: state.editingId || generateID(),
+                    type: type.value,
+                    date: date.value,
+                    description: description.value.trim(),
+                    amount: type.value === 'income' ? parseFloat(amount.value) : -parseFloat(amount.value)
+                };
+                if (state.editingId) {
+                    const index = state.transactions.findIndex(t => t.id === state.editingId);
+                    state.transactions[index] = newTransaction;
+                    showToast('Transaksi berhasil diperbarui!', 'success');
+                } else {
+                    state.transactions.push(newTransaction);
+                    showToast('Transaksi berhasil ditambahkan!', 'success');
+                }
+                resetForm();
+                saveStateToLocalStorage();
+                render();
+            };
+
+            const startEdit = (id) => {
+                const transaction = state.transactions.find(t => t.id === id);
+                if (!transaction) return;
+                state.editingId = id;
+                elements.type.value = transaction.type;
+                elements.date.value = transaction.date;
+                elements.description.value = transaction.description;
+                elements.amount.value = Math.abs(transaction.amount);
+
+                elements.formTitleText.innerHTML = '<i class="fas fa-pencil-alt"></i> Edit Transaksi';
+                elements.submitBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Perubahan';
+                elements.submitBtn.classList.replace('btn-primary', 'btn-warning');
+                elements.cancelEditBtn.style.display = 'inline-flex';
+                elements.description.focus();
+            };
+
+            const resetForm = () => {
+                state.editingId = null;
+                elements.form.reset();
+                elements.date.valueAsDate = new Date();
+                elements.formTitleText.innerHTML = '<i class="fas fa-plus-circle"></i> Tambah Transaksi Baru';
+                elements.submitBtn.innerHTML = '<i class="fas fa-check"></i> Tambah Transaksi';
+                elements.submitBtn.classList.replace('btn-warning', 'btn-primary');
+                elements.cancelEditBtn.style.display = 'none';
+            };
+
+            const removeTransaction = (id) => {
+                if (!confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) return;
+                state.transactions = state.transactions.filter(t => t.id !== id);
+                saveStateToLocalStorage();
+                render();
+                showToast('Transaksi telah dihapus.', 'success');
+            };
+
+            const deleteAllTransactions = () => {
+                if (!confirm('PERINGATAN! Ini akan menghapus semua data transaksi Anda. Aksi ini tidak dapat dibatalkan. Lanjutkan?')) return;
+                state.transactions = [];
+                saveStateToLocalStorage();
+                render();
+                showToast('Semua data berhasil dihapus.', 'success');
+            };
+            
+            const downloadJPG = () => {
+                showToast('Mempersiapkan gambar...', 'success');
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const PADDING = 30, FONT_SIZE = 14, LINE_HEIGHT = 20, ROW_HEIGHT = 40, TITLE_HEIGHT = 80;
+                const filteredData = state.transactions.filter(t => (state.filter.type === 'all' || t.type === state.filter.type)).filter(t => t.description.toLowerCase().includes(state.filter.search.toLowerCase())).sort((a,b) => new Date(b.date) - new Date(a.date));
+                if (filteredData.length === 0) { showToast('Tidak ada data untuk diunduh.', 'error'); return; }
+                canvas.width = elements.list.offsetWidth + PADDING * 2;
+                canvas.height = TITLE_HEIGHT + (filteredData.length + 1) * ROW_HEIGHT + PADDING;
+                ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#333'; ctx.font = 'bold 24px ' + getComputedStyle(document.body).fontFamily; ctx.textAlign = 'center';
+                ctx.fillText('Laporan Transaksi Keuangan', canvas.width / 2, PADDING + 20);
+                let y = TITLE_HEIGHT;
+                const headers = ['Tanggal', 'Deskripsi', 'Jumlah'];
+                ctx.font = `bold ${FONT_SIZE}px ` + getComputedStyle(document.body).fontFamily;
+                ctx.textAlign = 'left';
+                const colWidths = [120, canvas.width - 320, 150];
+                let currentX = PADDING;
+                headers.forEach((header, i) => { ctx.fillText(header, currentX, y); currentX += colWidths[i]; });
+                y += ROW_HEIGHT;
+                ctx.font = `${FONT_SIZE}px ` + getComputedStyle(document.body).fontFamily;
+                filteredData.forEach(t => {
+                    currentX = PADDING;
+                    ctx.fillStyle = '#333';
+                    ctx.fillText(formatDate(t.date), currentX, y); currentX += colWidths[0];
+                    ctx.fillText(t.description.length > 40 ? t.description.substring(0, 37)+'...' : t.description, currentX, y); currentX += colWidths[1];
+                    ctx.fillStyle = t.type === 'income' ? 'var(--income-color)' : 'var(--expense-color)';
+                    ctx.fillText(formatCurrency(t.amount), currentX, y);
+                    y += ROW_HEIGHT;
+                });
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/jpeg', 0.95);
+                link.download = 'laporan-keuangan.jpg';
+                link.click();
+            };
+            const downloadCSV = () => {
+                if(state.transactions.length === 0) { showToast('Tidak ada data untuk diunduh.', 'error'); return; }
+                const headers = ['ID', 'Tanggal', 'Tipe', 'Deskripsi', 'Jumlah'];
+                const rows = state.transactions.map(t => [t.id, t.date, t.type, `"${t.description.replace(/"/g, '""')}"`, t.amount].join(','));
+                const csvContent = [headers.join(','), ...rows].join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'laporan-keuangan.csv';
+                link.click();
+            };
+            
+            // --- EVENT LISTENERS ---
+            elements.form.addEventListener('submit', addTransaction);
+            elements.cancelEditBtn.addEventListener('click', resetForm);
+            
+            elements.list.addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-btn');
+                const deleteBtn = e.target.closest('.delete-btn');
+                if (editBtn) startEdit(parseFloat(editBtn.closest('.transaction-item').dataset.id));
+                if (deleteBtn) removeTransaction(parseFloat(deleteBtn.closest('.transaction-item').dataset.id));
+            });
+
+            elements.filterType.addEventListener('change', (e) => { state.filter.type = e.target.value; renderList(); });
+            elements.searchDescription.addEventListener('input', (e) => { state.filter.search = e.target.value; renderList(); });
+            elements.deleteAllBtn.addEventListener('click', deleteAllTransactions);
+            elements.downloadJpgBtn.addEventListener('click', downloadJPG);
+            elements.downloadCsvBtn.addEventListener('click', downloadCSV);
+
+            // --- INITIALIZATION ---
+            loadStateFromLocalStorage();
+            render();
+            elements.date.valueAsDate = new Date();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Keren</title>
+    
+    <!-- 1. Mengimpor Font Keren dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- 2. Mengimpor Ikon dari Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <style>
+        /* CSS untuk tampilan menu */
+
+        /* Style dasar untuk halaman */
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #1a1a2e; /* Warna latar belakang gelap kebiruan */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Halaman memenuhi layar */
+        }
+
+        /* Container utama untuk navigasi */
+        .navbar {
+            background: rgba(255, 255, 255, 0.1); /* Efek kaca transparan */
+            backdrop-filter: blur(10px); /* Efek blur pada latar belakang */
+            padding: 20px 30px;
+            border-radius: 50px; /* Bentuk kapsul */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Styling untuk list menu */
+        .nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex; /* Membuat item sejajar horizontal */
+            gap: 25px; /* Jarak antar item menu */
+        }
+
+        /* Styling untuk link di dalam menu */
+        .nav-link {
+            color: #f0f0f0; /* Warna teks putih keabuan */
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Jarak antara ikon dan teks */
+            border-radius: 40px;
+            transition: all 0.3s ease-in-out; /* Transisi untuk semua animasi */
+        }
+
+        /* --- EFEK KEREN SAAT HOVER --- */
+        .nav-link:hover {
+            transform: translateY(-5px); /* Item terangkat sedikit ke atas */
+            background: rgba(0, 198, 255, 0.2); /* Efek cahaya biru */
+            color: #ffffff; /* Teks menjadi putih terang */
+            box-shadow: 0 10px 20px rgba(0, 198, 255, 0.2); /* Bayangan glow */
+        }
+
+        /* Memberi sedikit penekanan pada ikon saat hover */
+        .nav-link:hover .icon {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Struktur HTML untuk menu -->
+    <nav class="navbar">
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="index0.html" class="nav-link">
+                    <i class="fas fa-home icon"></i>
+                    <span>Catatan 1</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index1.html" class="nav-link">
+                    <i class="fas fa-home icon"></i>
+                    <span>Catatan 2</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="index2.html" class="nav-link">
+                    <i class="fas fa-home icon"></i>
+                    <span>Catatan 3</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</body>
+</html>
