@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Orang yang Kucintai</title>
+
+    <!-- Impor Library & Font Baru -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+        :root {
+            /* PALET WARNA BARU: Hangat, Natural, dan Romantis */
+            --bg-overlay: rgba(46, 41, 37, 0.7);
+            --primary-color: #d9a0a0;
+            /* Soft Rose */
+            --text-color: #ffffff;
+            --font-poetry: 'Playfair Display', serif;
+            --font-ui: 'Lato', sans-serif;
+        }
+
+        html,
+        body {
+            position: relative;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-ui);
+            color: var(--text-color);
+            overflow: hidden;
+            background-image: url(img/aa.jpg);
+            background-size: cover
+        }
+
+         body::before {
+            content: "\00A9  Edy | Cindy";
+            color: hsl(0, 0%, 100%);
+            opacity: .22;
+            font-size: 11pt;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2
+        }
+
+        /* LATAR BELAKANG BARU: Video Taman Bunga */
+        #background-video {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            z-index: -2;
+            filter: blur(3px) brightness(0.9);
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-overlay);
+            z-index: -1;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 100;
+            transition: opacity 1.5s ease;
+        }
+
+        .start-prompt {
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .start-prompt img {
+            width: 90px;
+            animation: gentle-bloom 3s infinite ease-in-out;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+        }
+
+        .start-prompt p {
+            margin-top: 20px;
+            font-size: 1.3em;
+            color: white;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes gentle-bloom {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* KARTU PUISI BARU: Efek Kertas Perkamen */
+        #poem-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 2s ease;
+            z-index: 10;
+        }
+
+        #poem-card {
+            width: 100%;
+            max-width: 700px;
+            padding: 50px;
+            background-color: var(--paper-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 5px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        #typed-poem {
+            font-family: var(--font-poetry);
+            font-size: 2em;
+            line-height: 1.9;
+            font-style: italic;
+            font-weight: 400;
+            min-height: 200px;
+        }
+
+        .ti-cursor {
+            color: var(--primary-color);
+        }
+
+        #reply-button {
+            opacity: 0;
+            visibility: hidden;
+            margin-top: 30px;
+            padding: 12px 30px;
+            font-family: var(--font-ui);
+            font-size: 1em;
+            color: var(--primary-color);
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.5s ease 1s;
+            /* Delay agar muncul belakangan */
+        }
+
+        #reply-button:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        @media screen and (max-width: 768px) {
+            #poem-card {
+                padding: 40px 25px;
+            }
+
+            #typed-poem {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- GANTI DI SINI: Link video latar belakang (bunga mekar, dll) -->
+    <video autoplay muted loop id="background-video">
+        <source src="img/puis.mp3" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <audio id="lagu" src="img/puis.mp3" loop></audio>
+
+    <div class="overlay" id="overlay">
+        <div class="start-prompt" id="mulai">
+            <!-- GANTI DI SINI: Ikon pembuka (bunga, surat) -->
+            <img src="img/love.gif" alt="Bunga Mawar">
+            <p>Sentuh Ini Untukmu</p>
+        </div>
+    </div>
+
+    <div id="poem-container">
+        <div id="poem-card">
+            <p id="typed-poem"></p>
+            <!-- GANTI DI SINI: Nomor WhatsApp & Pesan Balasan -->
+            <button id="reply-button"
+                onclick="balasPesan('', 'Puisi kamu indah sekali... Terima kasih, Sayang ❤️')">Balas Puisi Ini</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+    <script>
+        document.getElementById('mulai').addEventListener('click', () => {
+            document.getElementById('lagu').play().catch(e => { });
+            document.getElementById('overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('poem-container').style.visibility = 'visible';
+                document.getElementById('poem-container').style.opacity = '1';
+                startTyping();
+            }, 1500);
+        });
+
+        function startTyping() {
+            new TypeIt("#typed-poem", {
+                speed: 80,
+                startDelay: 1000,
+                waitUntilVisible: true,
+                afterComplete: (instance) => {
+                    const replyButton = document.getElementById('reply-button');
+                    replyButton.style.visibility = 'visible';
+                    replyButton.style.opacity = '1';
+                }
+            })
+                // --- PUISI BARU: Untuk Orang yang Kucintai ---
+                .type('Di antara riuhnya dunia,', { delay: 400 })
+                .break({ delay: 800 })
+                .type('aku menemukan hening dalam suaramu.')
+                .pause(1200)
+                .delete(null, { instant: true, delay: 500 })
+
+                .type('Senyummu melukis pagi,')
+                .break({ delay: 800 })
+                .type('dan tawamu menjadi melodi hariku.')
+                .pause(1200)
+                .delete(null, { instant: true, delay: 500 })
+
+                .type('Tak perlu peta atau bintang pemandu,')
+                .break({ delay: 800 })
+                .type('selama jalanku adalah menuju dirimu.')
+                .pause(1200)
+                .delete(null, { instant: true, delay: 500 })
+
+                .type('Puisi ini sederhana, seperti rasaku:')
+                .break({ delay: 1000 })
+                .type('<br><strong style="font-size: 1.3em; color: var(--primary-color);">Aku mencintaimu.</strong>')
+                .go();
+        }
+
+        function balasPesan(nomor, pesan) {
+            window.open(`https://api.whatsapp.com/send?phone=${nomor}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+
+        // untuk security
+
+        document.addEventListener('keydown', function (event) {
+            // Menonaktifkan Ctrl+S (Simpan)
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                alert('Menyimpan halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+P (Cetak)
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                alert('Mencetak halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+U (Lihat Sumber Halaman)
+            if (event.ctrlKey && event.key === 'u') {
+                event.preventDefault();
+                alert('Melihat sumber halaman dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+F dan Ctrl+G (Kolom Pencarian)
+            if (event.ctrlKey && (event.key === 'f' || event.key === 'g')) {
+                event.preventDefault();
+                alert('Fungsi pencarian di halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+C (Salin)
+            if (event.ctrlKey && event.key === 'c') {
+                event.preventDefault();
+                alert('Menyalin konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+A (Pilih Semua)
+            if (event.ctrlKey && event.key === 'a') {
+                event.preventDefault();
+                alert('Memilih semua konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan F12 (Alat Pengembang)
+            if (event.key === 'F12') {
+                event.preventDefault();
+                alert('Alat pengembang dinonaktifkan.');
+            }
+        });
+
+        // Menonaktifkan menu klik kanan (menu konteks)
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            alert('Klik kanan dinonaktifkan.');
+        });
+
+    </script>
+</body>
+
+</html>

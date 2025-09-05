@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesan dari Bintang Untukmu</title>
+
+    <!-- Impor Library & Font Baru -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+        :root {
+            /* PALET WARNA BARU: Kosmik & Elegan */
+            --bg-color: #050216;
+            --primary-color: #f941a3;
+            /* Vibrant Magenta */
+            --secondary-color: #59d5e8;
+            /* Bright Cyan */
+            --text-color: #e6e6fa;
+            /* Lavender White */
+            --font-main: 'Poppins', sans-serif;
+        }
+
+        html,
+        body {
+            position: relative;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            background-image: url(img/Z.jpg);
+            background-size: cover;
+        }
+
+         body::before {
+            content: "\00A9  Edy | Cindy";
+            color: hsl(0, 0%, 100%);
+            opacity: .22;
+            font-size: 11pt;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2
+        }
+
+        /* LATAR BELAKANG BARU: Galaksi & Bintang */
+        #background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        #galaxy-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            opacity: 0.5;
+        }
+
+        #star-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: rgba(5, 2, 22, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            transition: opacity 1.5s ease;
+        }
+
+        .start-prompt {
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .start-circle {
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: pulse-glow 2.5s infinite;
+        }
+
+        .start-circle-inner {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        .start-prompt p {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 10px 0 var(--primary-color);
+            }
+
+            50% {
+                box-shadow: 0 0 30px 10px var(--primary-color);
+            }
+
+            100% {
+                box-shadow: 0 0 10px 0 var(--primary-color);
+            }
+        }
+
+        /* WADAH MESIN KETIK BARU */
+        #typewriter-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease 0.5s;
+        }
+
+        #typed-text {
+            width: 100%;
+            max-width: 900px;
+            font-size: 2.2em;
+            font-weight: 300;
+            line-height: 1.7;
+            text-align: center;
+            min-height: 250px;
+        }
+
+        /* EFEK KURSOR BARU */
+        .ti-cursor {
+            color: var(--primary-color);
+            font-weight: 400;
+            box-shadow: 0 0 15px var(--primary-color);
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        #reply-button {
+            opacity: 0;
+            visibility: hidden;
+            margin-top: 40px;
+            padding: 12px 30px;
+            font-family: var(--font-main);
+            font-size: 1.1em;
+            font-weight: 400;
+            color: var(--secondary-color);
+            background-color: transparent;
+            border: 2px solid var(--secondary-color);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+        }
+
+        #reply-button:hover {
+            background-color: var(--secondary-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px rgba(89, 213, 232, 0.5);
+        }
+
+        @media screen and (max-width: 768px) {
+            #typed-text {
+                font-size: 1.5em;
+            }
+
+            .start-prompt p {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="background-container">
+        <!-- GANTI DI SINI: Link latar belakang GIF galaksi -->
+        <img id="galaxy-bg" src="https://i.postimg.cc/sfN1m0r4/galaxy-bg.gif" alt="Galaxy Background">
+        <canvas id="star-canvas"></canvas>
+    </div>
+    <audio id="lagu" src="img/puisi.mp3" loop></audio>
+
+    <div class="overlay" id="overlay">
+        <div class="start-prompt" id="mulai">
+            <div class="start-circle">
+                <div class="start-circle-inner"></div>
+            </div>
+            <p>Sebuah Pesan Sedang Ditransmisikan...</p>
+        </div>
+    </div>
+
+    <div id="typewriter-container">
+        <p id="typed-text"></p>
+        <!-- GANTI DI SINI: Nomor WhatsApp & Pesan Balasan -->
+        <button id="reply-button"
+            onclick="balasPesan('', 'Pesan bintangnya sudah sampai di hatiku. I love you too ❤️')">Balas Pesan
+            Bintang</button>
+    </div>
+
+    <script src="img/peachhug.gif"></script>
+    <script>
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let stars = [];
+        for (let i = 0; i < 150; i++) { stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.2, alpha: Math.random(), dAlpha: 0.01 * (Math.random() > 0.5 ? 1 : -1) }); }
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                star.alpha += star.dAlpha;
+                if (star.alpha <= 0 || star.alpha >= 1) star.dAlpha *= -1;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(230, 230, 250, ${star.alpha})`;
+                ctx.fill();
+            });
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        document.getElementById('mulai').addEventListener('click', () => {
+            document.getElementById('lagu').play().catch(e => { });
+            document.getElementById('overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('typewriter-container').style.visibility = 'visible';
+                document.getElementById('typewriter-container').style.opacity = '1';
+                startTyping();
+            }, 1500);
+        });
+
+        function startTyping() {
+            new TypeIt("#typed-text", {
+                speed: 70,
+                startDelay: 1000,
+                waitUntilVisible: true,
+                afterComplete: (instance) => {
+                    instance.destroy();
+                    const replyButton = document.getElementById('reply-button');
+                    replyButton.style.visibility = 'visible';
+                    replyButton.style.opacity = '1';
+                }
+            })
+                // --- GANTI DI SINI: Puisi untuk sang kekasih ---
+                .type('Untukmu,', { delay: 400 })
+                .pause(500)
+                .type(' yang cahayanya melebihi bintang...')
+                .break({ delay: 800 })
+                .type('Di keheningan alam semesta ini,', { delay: 500 })
+                .break({ delay: 600 })
+                .type('hanya ada satu suara yang selalu ingin kudengar,', { delay: 500 })
+                .pause(500)
+                .type(' yaitu tawamu.')
+                .delete(11, { delay: 400, speed: 100 })
+                .type('<strong>suaramu.</strong>')
+                .break({ delay: 800 })
+                .type('Dan hanya ada satu cahaya yang menuntunku pulang,', { delay: 500 })
+                .break({ delay: 600 })
+                .type('<span style="color: var(--primary-color);">yaitu senyummu.</span>')
+                .break({ delay: 800 })
+                .type('Terima kasih telah menjadi semestaku.')
+                .go();
+        }
+
+        function balasPesan(nomor, pesan) {
+            window.open(`https://api.whatsapp.com/send?phone=${nomor}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stars = [];
+            for (let i = 0; i < 150; i++) { stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.2, alpha: Math.random(), dAlpha: 0.01 * (Math.random() > 0.5 ? 1 : -1) }); }
+        });
+
+        // untuk security
+
+        document.addEventListener('keydown', function (event) {
+            // Menonaktifkan Ctrl+S (Simpan)
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                alert('Menyimpan halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+P (Cetak)
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                alert('Mencetak halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+U (Lihat Sumber Halaman)
+            if (event.ctrlKey && event.key === 'u') {
+                event.preventDefault();
+                alert('Melihat sumber halaman dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+F dan Ctrl+G (Kolom Pencarian)
+            if (event.ctrlKey && (event.key === 'f' || event.key === 'g')) {
+                event.preventDefault();
+                alert('Fungsi pencarian di halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+C (Salin)
+            if (event.ctrlKey && event.key === 'c') {
+                event.preventDefault();
+                alert('Menyalin konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+A (Pilih Semua)
+            if (event.ctrlKey && event.key === 'a') {
+                event.preventDefault();
+                alert('Memilih semua konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan F12 (Alat Pengembang)
+            if (event.key === 'F12') {
+                event.preventDefault();
+                alert('Alat pengembang dinonaktifkan.');
+            }
+        });
+
+        // Menonaktifkan menu klik kanan (menu konteks)
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            alert('Klik kanan dinonaktifkan.');
+        });
+
+    </script>
+</body>
+
+</html>
