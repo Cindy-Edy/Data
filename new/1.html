@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sebuah Perjalanan Untukmu ✨</title>
+
+    <!-- Impor Library & Font -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --primary-color: #e94560;
+            --text-color: #f0f0f0;
+            --font-title: 'Pacifico', cursive;
+            --font-body: 'Poppins', sans-serif;
+        }
+
+        html,
+        body {
+            position: relative;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            background-image: url(img/r.jpg);
+            background-size: cover;
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "\00A9  Edy | Cindy";
+            color: hsl(0, 0%, 100%);
+            opacity: .22;
+            font-size: 11pt;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2
+        }
+
+        #background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+            animation: zoomEffect 20s infinite alternate;
+        }
+
+        #background-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes zoomEffect {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.2);
+            }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            transition: opacity 1s ease;
+        }
+
+        .heart-button {
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+
+        .heart-button svg {
+            width: 60px;
+            height: 60px;
+            fill: var(--primary-color);
+        }
+
+        .overlay p {
+            margin-top: 15px;
+            font-size: 1.2em;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .swiper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .slide-content {
+            text-align: center;
+            padding: 30px;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .slide-content .gambar {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .slide-content h1 {
+            font-family: var(--font-title);
+            font-size: 2.2em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .slide-content p {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .content-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .swiper-slide-active .content-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .swiper-slide-active .content-item:nth-child(1) {
+            transition-delay: 0.2s;
+        }
+
+        .swiper-slide-active .content-item:nth-child(2) {
+            transition-delay: 0.4s;
+        }
+
+        .swiper-slide-active .content-item:nth-child(3) {
+            transition-delay: 0.6s;
+        }
+
+        /* DIUBAH: CSS baru untuk teks akhir agar transparan dan fokus */
+        .final-text-container {
+            max-width: 650px;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        #pesan-final {
+            font-size: 1.3em;
+            line-height: 1.8;
+            min-height: 250px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            /* Shadow agar lebih mudah dibaca */
+        }
+
+        .falling-heart {
+            position: absolute;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            top: -5vh;
+            animation: fall linear infinite;
+            opacity: 0;
+            z-index: 99;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(105vh) rotate(360deg);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- GANTI DI SINI: Link untuk musik latar -->
+    <audio id="lagu" src="img/PERFECT.mp3" loop></audio>
+
+    <div id="background-container">
+        <!-- GANTI DI SINI: Link untuk gambar latar belakang -->
+        <img id="background-image" src="img/i.jpg" alt="background">
+    </div>
+
+    <div class="overlay" id="overlay">
+        <div class="heart-button" id="mulai">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
+                </path>
+            </svg>
+        </div>
+        <p>Sentuh hatinya...</p>
+    </div>
+
+    <div class="swiper">
+        <div class="swiper-wrapper">
+
+            <!-- Slide 1: Pembuka -->
+            <div class="swiper-slide">
+                <div class="slide-content">
+                    <img src="img/glg.gif" alt="gif pembuka" class="gambar content-item">
+                    <h1 class="content-item">Hai Kamu!</h1>
+                    <p class="content-item">Aku buat sesuatu yang spesial buat kamu.</br> Geser ke kanan ya! →→</p>
+                </div>
+            </div>
+
+            <!-- Slide 2: Pertanyaan/Pujian -->
+            <div class="swiper-slide">
+                <div class="slide-content">
+                    <img src="img/mndkat.gif" alt="gif kedua" class="gambar content-item">
+                    <h1 class="content-item">Cuma Mau Bilang...</h1>
+                    <p class="content-item">...kalau kamu itu luar biasa. </br>Terima kasih ya udah hadir di hidup aku.
+                        </br>Aku bersyukur banget.</br> Geser ke kanan ya! →→</p>
+                </div>
+            </div>
+
+            <!-- DIUBAH: Struktur slide terakhir disederhanakan -->
+            <!-- Slide 3: Klimaks dengan Efek Ketik (Tanpa Kotak & Gambar) -->
+            <div class="swiper-slide">
+                <div class="final-text-container">
+                    <p id="pesan-final" class="content-item"></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+    <script>
+        const swiper = new Swiper('.swiper', {
+            direction: 'horizontal',
+            loop: false,
+            on: {
+                slideChange: function () {
+                    if (this.activeIndex === 2) {
+                        mulaiMengetik();
+                    }
+                }
+            }
+        });
+
+        let sudahMengetik = false;
+        function mulaiMengetik() {
+            if (sudahMengetik) return;
+            sudahMengetik = true;
+
+            // DIUBAH: Gambar final tidak lagi ditampilkan
+
+            new TypeIt("#pesan-final", {
+                speed: 50,
+                startDelay: 900,
+                waitUntilVisible: true,
+                afterComplete: function (instance) {
+                    instance.destroy();
+                    setInterval(buatHati, 400);
+                }
+            })
+                // GANTI DI SINI: Teks panjang untuk efek ketikan
+                .type('Aku mungkin bukan orang yang paling sempurna, sering bikin kesel, dan banyak kurangnya.', { delay: 300 })
+                .break({ delay: 500 })
+                .type('Tapi, aku mau kamu tau...', { delay: 500 })
+                .break({ delay: 500 })
+                .type('Aku beneran <strong style="color: var(--primary-color);">sayang banget sama kamu.</strong>')
+                .break({ delay: 500 })
+                .type('Tetap jadi orang yang sama ya. I love you more than words can say! ❤️')
+                .go();
+        }
+
+        document.getElementById('mulai').addEventListener('click', function () {
+            document.getElementById('lagu').play();
+            const overlay = document.getElementById('overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 1000);
+        });
+
+        function buatHati() {
+            const heart = document.createElement('div');
+            heart.classList.add('falling-heart');
+            heart.innerText = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+
+                     // untuk security
+                     
+       document.addEventListener('keydown', function(event) {
+    // Menonaktifkan Ctrl+S (Simpan)
+    if (event.ctrlKey && event.key === 's') {
+        event.preventDefault();
+        alert('Menyimpan halaman ini dinonaktifkan.');
+    }
+
+    // Menonaktifkan Ctrl+P (Cetak)
+    if (event.ctrlKey && event.key === 'p') {
+        event.preventDefault();
+        alert('Mencetak halaman ini dinonaktifkan.');
+    }
+
+    // Menonaktifkan Ctrl+U (Lihat Sumber Halaman)
+    if (event.ctrlKey && event.key === 'u') {
+        event.preventDefault();
+        alert('Melihat sumber halaman dinonaktifkan.');
+    }
+
+    // Menonaktifkan Ctrl+F dan Ctrl+G (Kolom Pencarian)
+    if (event.ctrlKey && (event.key === 'f' || event.key === 'g')) {
+        event.preventDefault();
+        alert('Fungsi pencarian di halaman ini dinonaktifkan.');
+    }
+
+    // Menonaktifkan Ctrl+C (Salin)
+    if (event.ctrlKey && event.key === 'c') {
+        event.preventDefault();
+        alert('Menyalin konten dinonaktifkan.');
+    }
+
+    // Menonaktifkan Ctrl+A (Pilih Semua)
+    if (event.ctrlKey && event.key === 'a') {
+        event.preventDefault();
+        alert('Memilih semua konten dinonaktifkan.');
+    }
+
+    // Menonaktifkan F12 (Alat Pengembang)
+    if (event.key === 'F12') {
+        event.preventDefault();
+        alert('Alat pengembang dinonaktifkan.');
+    }
+});
+
+// Menonaktifkan menu klik kanan (menu konteks)
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+    alert('Klik kanan dinonaktifkan.');
+});
+
+    </script>
+</body>
+
+</html>

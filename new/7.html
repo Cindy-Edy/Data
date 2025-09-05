@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semestaku Adalah Kamu</title>
+
+    <!-- Impor Library & Font Baru -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+        :root {
+            /* PALET WARNA BARU: Kosmik, Neon, dan Modern */
+            --bg-color: #030617;
+            --primary-color: #e11d48; /* Vibrant Magenta */
+            --secondary-color: #00e5ff; /* Bright Cyan */
+            --text-color: #e2e8f0;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glow-border: rgba(0, 229, 255, 0.3);
+            --font-title: 'Orbitron', sans-serif;
+            --font-body: 'Poppins', sans-serif;
+        }
+
+        html, body {
+            position: relative;
+            height: 100%;
+            margin: 0; padding: 0;
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            background-image: url(img/d.jpg);
+            background-size: cover;
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+         body::before {
+            content: "\00A9  Edy | Cindy";
+            color: hsl(0, 0%, 100%);
+            opacity: .22;
+            font-size: 11pt;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2
+        }
+        
+        /* LATAR BELAKANG BARU: Jaringan Konstelasi Partikel */
+        #constellation-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: rgba(3, 6, 23, 0.9);
+            z-index: 100;
+            transition: opacity 1.5s ease;
+        }
+        .icon-container {
+            cursor: pointer;
+            animation: cosmic-pulse 2.5s infinite;
+        }
+        .icon-container img {
+            width: 80px;
+            filter: drop-shadow(0 0 20px var(--secondary-color));
+        }
+        .overlay p {
+            margin-top: 20px;
+            font-size: 1.3em;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--secondary-color);
+        }
+        @keyframes cosmic-pulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px var(--secondary-color)); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 30px var(--primary-color)); }
+        }
+
+        .swiper { width: 100%; height: 100%; }
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        /* KARTU BARU: Panel Holografik */
+        .slide-content {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            padding: 40px; width: 100%; max-width: 500px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--glow-border);
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.1);
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        .swiper-slide-active .slide-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .slide-content .gambar {
+            width: 120px; height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            padding: 5px;
+            border: 2px solid var(--secondary-color);
+            margin-bottom: 25px;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+        }
+        .slide-content h1 {
+            font-family: var(--font-title);
+            font-size: 2.5em;
+            font-weight: 700;
+            margin: 0 0 15px 0;
+            color: var(--text-color);
+            text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+        }
+        .slide-content p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+        
+        .next-button {
+            margin-top: 25px;
+            font-size: 1em;
+            font-weight: 400;
+            letter-spacing: 1px;
+            color: var(--secondary-color);
+            cursor: pointer;
+            text-decoration: none;
+            padding: 10px 25px;
+            border: 1px solid var(--secondary-color);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        .next-button:hover {
+            background-color: var(--secondary-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px var(--secondary-color);
+        }
+        
+        .final-text-container { width: 100%; max-width: 750px; text-align: center; }
+        #pesan-final {
+            font-size: 1.6em;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+        
+        #reply-button {
+            opacity: 0; visibility: hidden;
+            transition: all 0.5s ease;
+        }
+
+        @media screen and (max-width: 768px) {
+            .slide-content { padding: 30px 25px; }
+            .slide-content h1 { font-size: 2em; }
+            .slide-content p { font-size: 1em; }
+            .slide-content .gambar { width: 100px; height: 100px; }
+            #pesan-final { font-size: 1.3em; }
+        }
+    </style>
+</head>
+<body>
+    
+    <canvas id="constellation-canvas"></canvas>
+    <audio id="lagu" src="img/roamnts.mp3" loop></audio>
+
+    <div class="overlay" id="overlay">
+        <div class="icon-container" id="mulai">
+            <!-- GANTI DI SINI: Ikon pembuka (bintang/planet) -->
+            <img src="img/bumi.png" alt="Bintang">
+        </div>
+        <p style="text-align: center;">Sebuah Pesan Kosmik... Untukmu</p>
+    </div>
+
+    <div class="swiper">
+        <div class="swiper-wrapper">
+
+            <!-- Halaman 1 -->
+            <div class="swiper-slide">
+                <div class="slide-content">
+                    <img src="img/love.gif" alt="kekasihku" class="gambar">
+                    <h1>Untuk Kekasihku,</h1>
+                    <p>Di luasnya alam semesta ini, aku menemukan bintang paling terang. Dan bintang itu adalah kamu.</p>
+                    <a class="next-button" onclick="swiper.slideNext()">Lanjutkan Perjalanan →</a>
+                </div>
+            </div>
+
+            <!-- Halaman 2 -->
+            <div class="swiper-slide">
+                <div class="slide-content">
+                    <img src="img/sunset.gif" alt="kenangan" class="gambar">
+                    <h1>Petualangan Kita</h1>
+                    <p>Setiap hari bersamamu adalah petualangan di galaksi baru. Kamu mengubah duniaku menjadi penuh warna dan keajaiban.</p>
+                    <a class="next-button" onclick="swiper.slideNext()">Lihat Pesanku →</a>
+                </div>
+            </div>
+
+            <!-- Halaman Final -->
+            <div class="swiper-slide">
+                <div class="final-text-container">
+                    <p id="pesan-final"></p>
+                    <!-- GANTI DI SINI: Nomor WhatsApp & Pesan Balasan -->
+                    <a id="reply-button" class="next-button" onclick="balasPesan('', 'Pesan kosmiknya sudah sampai ke hatiku. I love you to the moon and back! ❤️')">Balas Pesan Ini</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+    <script>
+        // --- Skrip Latar Belakang Jaringan Konstelasi Partikel ---
+        const canvas = document.getElementById('constellation-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particles = [];
+        const mouse = { x: null, y: null };
+
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+        
+        class Particle {
+            constructor(x, y, size, color, speedX, speedY) {
+                this.x = x; this.y = y; this.size = size; this.color = color; this.speedX = speedX; this.speedY = speedY;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
+                if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
+                this.x += this.speedX;
+                this.y += this.speedY;
+            }
+        }
+
+        function init() {
+            particles = [];
+            for (let i = 0; i < 100; i++) {
+                let size = Math.random() * 2 + 1;
+                let x = Math.random() * (canvas.width - size * 2) + size;
+                let y = Math.random() * (canvas.height - size * 2) + size;
+                let speedX = Math.random() * 0.4 - 0.2;
+                let speedY = Math.random() * 0.4 - 0.2;
+                let color = 'rgba(226, 232, 240, 0.8)';
+                particles.push(new Particle(x, y, size, color, speedX, speedY));
+            }
+        }
+        
+        function connect() {
+            let opacityValue = 1;
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a; b < particles.length; b++) {
+                    let distance = Math.sqrt(Math.pow(particles[a].x - particles[b].x, 2) + Math.pow(particles[a].y - particles[b].y, 2));
+                    if (distance < 100) {
+                        opacityValue = 1 - (distance / 100);
+                        ctx.strokeStyle = `rgba(0, 229, 255, ${opacityValue})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            connect();
+            requestAnimationFrame(animate);
+        }
+        init();
+        animate();
+        
+        // --- Inisialisasi Swiper dengan Navigasi Klik ---
+        const swiper = new Swiper('.swiper', {
+            loop: false, allowTouchMove: false, effect: 'fade', fadeEffect: { crossFade: true },
+            on: { slideChange: function () { if (this.activeIndex === 2) mulaiMengetik(); } }
+        });
+        
+        let sudahMengetik = false;
+        function mulaiMengetik() {
+            if (sudahMengetik) return;
+            sudahMengetik = true;
+            new TypeIt("#pesan-final", {
+                speed: 60, startDelay: 900,
+                afterComplete: (instance) => {
+                    instance.destroy();
+                    document.getElementById('reply-button').style.visibility = 'visible';
+                    document.getElementById('reply-button').style.opacity = '1';
+                }
+            })
+            // --- GANTI DI SINI: Naskah cerita "Bersyukur Memiliki Mu" untuk Kekasih ---
+            .type('Kadang aku masih tak percaya...', { delay: 400 })
+            .break({ delay: 500 })
+            .type('bagaimana takdir mempertemukan kita di antara milyaran manusia.', { delay: 600 })
+            .break({ delay: 700 })
+            .type('Kamu bukan hanya kekasihku, kamu adalah pusat gravitasiku, kompas hatiku.', { delay: 600 })
+            .break({ delay: 700 })
+            .type('Aku tidak sabar menjelajahi seluruh sisa alam semesta ini, <strong style="color: var(--primary-color);">selama aku bersamamu.</strong>')
+            .go();
+        }
+
+        document.getElementById('mulai').addEventListener('click', function() {
+            document.getElementById('lagu').play().catch(e => {});
+            document.getElementById('overlay').style.opacity = '0';
+            setTimeout(() => { document.getElementById('overlay').style.display = 'none'; }, 1500);
+        });
+        
+        function balasPesan(nomor, pesan) {
+            window.open(`https://api.whatsapp.com/send?phone=${nomor}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
+        });
+
+         // untuk security
+
+        document.addEventListener('keydown', function (event) {
+            // Menonaktifkan Ctrl+S (Simpan)
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                alert('Menyimpan halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+P (Cetak)
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                alert('Mencetak halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+U (Lihat Sumber Halaman)
+            if (event.ctrlKey && event.key === 'u') {
+                event.preventDefault();
+                alert('Melihat sumber halaman dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+F dan Ctrl+G (Kolom Pencarian)
+            if (event.ctrlKey && (event.key === 'f' || event.key === 'g')) {
+                event.preventDefault();
+                alert('Fungsi pencarian di halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+C (Salin)
+            if (event.ctrlKey && event.key === 'c') {
+                event.preventDefault();
+                alert('Menyalin konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+A (Pilih Semua)
+            if (event.ctrlKey && event.key === 'a') {
+                event.preventDefault();
+                alert('Memilih semua konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan F12 (Alat Pengembang)
+            if (event.key === 'F12') {
+                event.preventDefault();
+                alert('Alat pengembang dinonaktifkan.');
+            }
+        });
+
+        // Menonaktifkan menu klik kanan (menu konteks)
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            alert('Klik kanan dinonaktifkan.');
+        });
+    </script>
+</body>
+</html>
