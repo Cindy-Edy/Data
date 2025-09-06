@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indahnya Malam Ini</title>
+
+    <!-- Impor Library & Font -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=EB+Garamond:ital,wght@0,400;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+         :root {
+            --bg-overlay: rgba(0, 0, 0, 0.5);
+            --primary-color: #f7d08a;
+            /* Soft Sunset Gold */
+            --text-color: #ffffff;
+            --text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.8);
+            --font-main: 'Lora', serif;
+            --font-ui: 'Poppins', sans-serif;
+        }
+
+        html,
+        body {
+            position: relative;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            color: var(--text-color);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        body::before {
+            content: "\00A9  Edy | Cindy";
+            color: hsl(0, 0%, 100%);
+            opacity: .22;
+            font-size: 11pt;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2
+        }
+
+        #background-video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        #background-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 20%, transparent 80%);
+            z-index: -1;
+        }
+
+        .centered-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+       #initial-prompt {
+            transition: opacity 1.5s ease;
+        }
+
+        #initial-prompt .icon {
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+
+        #initial-prompt .icon:hover {
+            transform: scale(1.1);
+        }
+
+        #initial-prompt img {
+            width: 90px;
+            filter: drop-shadow(0 0 20px var(--primary-color));
+        }
+
+        #initial-prompt p {
+            margin-top: 20px;
+            font-size: 1.3em;
+            color: white;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .swiper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .swiper-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .swiper-slide-active {
+            opacity: 1;
+        }
+
+        .story-content {
+            max-width: 700px;
+        }
+
+        .story-content h1 {
+            font-family: var(--font-title);
+            font-size: 4.5em;
+            font-weight: 400;
+            margin: 0;
+            color: var(--highlight-color);
+            text-shadow: var(--text-shadow);
+        }
+
+        .story-content p {
+            font-size: 1.5em;
+            line-height: 1.8;
+            font-style: italic;
+            text-shadow: var(--text-shadow);
+            margin-top: 10px;
+        }
+
+        .next-moon {
+            margin-top: 30px;
+            cursor: pointer;
+            width: 40px;
+            filter: drop-shadow(0 0 10px var(--primary-color));
+            transition: transform 0.3s ease;
+        }
+
+        .next-moon:hover {
+            transform: scale(1.2);
+        }
+
+        #reply-button {
+            visibility: hidden;
+            opacity: 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            font-weight: 300;
+            padding: 10px 25px;
+            color: var(--primary-color);
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            border-radius: 50px;
+            transition: all 0.5s ease 1s;
+        }
+
+        #reply-button:hover {
+            background: var(--primary-color);
+            color: #333;
+        }
+
+        @media screen and (max-width: 768px) {
+            .story-content h1 {
+                font-size: 3.5em;
+            }
+
+            .story-content p {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="background-video-container">
+        <!-- GANTI DI SINI: Link video MP4 senja atau langit malam -->
+        <video autoplay muted loop playsinline id="background-video">
+            <source src="qe.MP4" type="video/mp4">
+        </video>
+    </div>
+    <div class="bg-overlay"></div>
+
+    <audio id="lagu" src="night.mp3" loop></audio>
+
+    <div class="centered-container" id="initial-prompt">
+        <div class="icon" id="start-story">
+            <!-- GANTI DI SINI: Gunakan link online untuk gambar Anda juga -->
+            <img src="mon.png" alt="Bulan">
+        </div>
+        <p>Sentuh Rembulan Ini...</p>
+    </div>
+
+    <div class="swiper" style="visibility: hidden;">
+        <div class="swiper-wrapper">
+            <!-- Halaman 1 -->
+            <div class="swiper-slide">
+                <div class="story-content">
+                    <h1>Lihatlah Langit...</h1>
+                    <p>Malam ini begitu indah, bintang-bintang bersinar terang. Tapi ada yang lebih terang dari
+                        semuanya...</p>
+                    <!-- GANTI DI SINI: Gunakan link online untuk gambar Anda juga -->
+                    <img class="next-moon" src="moon.png" alt="Lanjutkan" onclick="swiper.slideNext()">
+                </div>
+            </div>
+
+            <!-- Halaman 2 -->
+            <div class="swiper-slide">
+                <div class="story-content">
+                    <h1>...Yaitu Matamu</h1>
+                    <p>Cahayanya mengalahkan gemerlap bintang manapun, dan kehangatannya melebihi cahaya rembulan.</p>
+                    <!-- GANTI DI SINI: Gunakan link online untuk gambar Anda juga -->
+                    <img class="next-moon" src="moon.png" alt="Lanjutkan" onclick="swiper.slideNext()">
+                </div>
+            </div>
+
+            <!-- Halaman 3 (Final) -->
+            <div class="swiper-slide">
+                <div class="story-content">
+                    <p id="final-text"></p>
+                    <button id="reply-button"
+                        onclick="balasPesan('6281234567890', 'Malam ini memang indah, apalagi setelah membaca pesanmu ❤️')">Balas
+                        Pesan Ini</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+    <script>
+        const swiper = new Swiper('.swiper', {
+            loop: false, allowTouchMove: false, effect: 'fade',
+            fadeEffect: { crossFade: true },
+            on: { slideChange: function () { if (this.activeIndex === 2) { mulaiMengetik(); } } }
+        });
+
+        document.getElementById('start-story').addEventListener('click', () => {
+            document.getElementById('lagu').play().catch(e => { });
+            document.getElementById('initial-prompt').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('initial-prompt').style.display = 'none';
+                document.querySelector('.swiper').style.visibility = 'visible';
+            }, 1000);
+        });
+
+        let sudahMengetik = false;
+        function mulaiMengetik() {
+            if (sudahMengetik) return;
+            sudahMengetik = true;
+            new TypeIt("#final-text", {
+                speed: 80, startDelay: 900, waitUntilVisible: true,
+                afterComplete: (instance) => {
+                    instance.destroy();
+                    const replyButton = document.getElementById('reply-button');
+                    replyButton.style.visibility = 'visible';
+                    replyButton.style.opacity = '1';
+                }
+            })
+                .type('Jujur saja...', { delay: 400 })
+                .break({ delay: 800 })
+                .type('Malam ini menjadi indah bukan karena bulan atau bintangnya.', { delay: 600 })
+                .break({ delay: 1000 })
+                .type('<strong style="font-family: var(--font-title); font-size: 2em; color: var(--highlight-color);">Malam ini indah, karena aku melewatinya bersamamu.</strong>')
+                .go();
+        }
+
+        function balasPesan(nomor, pesan) {
+            window.open(`https://api.whatsapp.com/send?phone=${nomor}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+
+        // untuk security
+
+        document.addEventListener('keydown', function (event) {
+            // Menonaktifkan Ctrl+S (Simpan)
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                alert('Menyimpan halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+P (Cetak)
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                alert('Mencetak halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+U (Lihat Sumber Halaman)
+            if (event.ctrlKey && event.key === 'u') {
+                event.preventDefault();
+                alert('Melihat sumber halaman dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+F dan Ctrl+G (Kolom Pencarian)
+            if (event.ctrlKey && (event.key === 'f' || event.key === 'g')) {
+                event.preventDefault();
+                alert('Fungsi pencarian di halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+C (Salin)
+            if (event.ctrlKey && event.key === 'c') {
+                event.preventDefault();
+                alert('Menyalin konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+A (Pilih Semua)
+            if (event.ctrlKey && event.key === 'a') {
+                event.preventDefault();
+                alert('Memilih semua konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan F12 (Alat Pengembang)
+            if (event.key === 'F12') {
+                event.preventDefault();
+                alert('Alat pengembang dinonaktifkan.');
+            }
+        });
+
+        // Menonaktifkan menu klik kanan (menu konteks)
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            alert('Klik kanan dinonaktifkan.');
+        });
+    </script>
+</body>
+
+</html>

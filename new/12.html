@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memetik Bintang Untukmu</title>
+
+    <!-- Impor Library & Font -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,400;1,700&family=Poppins:wght@300&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+        :root {
+            --bg-overlay: rgba(0, 0, 0, 0.5);
+            --primary-color: #f7d08a;
+            /* Soft Sunset Gold */
+            --text-color: #ffffff;
+            --text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.8);
+            --font-main: 'Lora', serif;
+            --font-ui: 'Poppins', sans-serif;
+        }
+
+        html,
+        body {
+            position: relative;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "\00A9  Edy | Cindy";
+            color: hsl(0, 0%, 100%);
+            opacity: .22;
+            font-size: 11pt;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2
+        }
+
+        #background-video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        #background-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 20%, transparent 80%);
+            z-index: -1;
+        }
+
+        .centered-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        #initial-prompt {
+            transition: opacity 1.5s ease;
+            text-align: center;
+        }
+
+        #initial-prompt .icon {
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+
+        #initial-prompt .icon:hover {
+            transform: scale(1.1);
+        }
+
+        #initial-prompt img {
+            width: 80px;
+            filter: drop-shadow(0 0 15px var(--primary-color));
+        }
+
+        #initial-prompt p {
+            margin-top: 20px;
+            font-size: 1.3em;
+            color: white;
+            font-family: var(--font-ui);
+            font-weight: 300;
+        }
+
+        /* PERBAIKAN UTAMA: Penyesuaian Posisi Swiper */
+        .swiper {
+            width: 90%;
+            /* Menggunakan persentase agar responsif */
+            max-width: 800px;
+            /* Batas lebar maksimum */
+            height: auto;
+            /* Tinggi otomatis sesuai konten */
+            position: absolute;
+            top: 55%;
+            /* Sedikit di bawah tengah */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* Trik pemusatan sempurna */
+        }
+
+        .swiper-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 0;
+            /* Padding vertikal, horizontal 0 */
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .story-text {
+            font-size: 1.8em;
+            font-style: italic;
+            line-height: 1.8;
+            text-shadow: var(--text-shadow);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .swiper-slide-active .story-text {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .next-button {
+            margin-top: 30px;
+            font-size: 1.1em;
+            font-family: var(--font-ui);
+            font-weight: 300;
+            color: var(--primary-color);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: var(--text-shadow);
+        }
+
+        .next-button:hover {
+            letter-spacing: 1px;
+        }
+
+        #reply-button {
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        @media screen and (max-width: 768px) {
+            .swiper {
+                top: 50%;
+                width: 95%;
+            }
+
+            /* Di mobile, posisi pas di tengah */
+            .story-text {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="background-video-container">
+        <!-- GANTI DI SINI: Link video MP4 senja atau langit malam -->
+        <video autoplay muted loop playsinline id="background-video">
+            <source src="dl.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="bg-overlay"></div>
+
+    <audio id="lagu" src="ran.mp3" loop></audio>
+
+    <div class="centered-container" id="initial-prompt">
+        <div class="icon" id="start-story">
+            <!-- GANTI DI SINI: Ikon pembuka (bintang jatuh) -->
+            <img src="star.gif" alt="Bintang Jatuh">
+        </div>
+        <p>Sentuh Bintang Untukmu</p>
+    </div>
+
+    <!-- Kontainer Cerita dengan Swiper.js -->
+    <div class="swiper" style="visibility: hidden;">
+        <div class="swiper-wrapper">
+            <!-- Cerita 1 -->
+            <div class="swiper-slide">
+                <p class="story-text">Di antara triliunan cahaya, aku mencari satu yang paling terang...</p>
+                <button class="story-text next-button" onclick="swiper.slideNext()"
+                    style="transition-delay: 0.5s;">Lanjutkan →</button>
+            </div>
+
+            <!-- Cerita 2 -->
+            <div class="swiper-slide">
+                <p class="story-text">Bukan yang terbesar, tapi yang sinarnya paling menenangkan hati...</p>
+                <button class="story-text next-button" onclick="swiper.slideNext()" style="transition-delay: 0.5s;">Aku
+                    Menemukannya →</button>
+            </div>
+
+            <!-- Cerita Final (dengan TypeIt) -->
+            <div class="swiper-slide">
+                <p class="story-text" id="final-text"></p>
+                <!-- GANTI DI SINI: Nomor WhatsApp & Pesan Balasan -->
+                <button class="next-button" id="reply-button"
+                    onclick="balasPesan('', 'Kamu berhasil memetik bintang untukku. Terima kasih, Sayang ❤️')">Balas
+                    Pesan Ini</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+    <script>
+        const swiper = new Swiper('.swiper', {
+            loop: false,
+            allowTouchMove: false, // Menonaktifkan swipe
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
+            on: {
+                slideChange: function () {
+                    if (this.activeIndex === 2) {
+                        mulaiMengetik();
+                    }
+                }
+            }
+        });
+
+        document.getElementById('start-story').addEventListener('click', () => {
+            document.getElementById('lagu').play().catch(e => { });
+            document.getElementById('initial-prompt').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('initial-prompt').style.display = 'none';
+                document.querySelector('.swiper').style.visibility = 'visible';
+            }, 1000);
+        });
+
+        let sudahMengetik = false;
+        function mulaiMengetik() {
+            if (sudahMengetik) return;
+            sudahMengetik = true;
+            new TypeIt("#final-text", {
+                speed: 70, startDelay: 900, waitUntilVisible: true,
+                afterComplete: (instance) => {
+                    instance.destroy();
+                    const replyButton = document.getElementById('reply-button');
+                    replyButton.style.visibility = 'visible';
+                    replyButton.style.opacity = '1';
+                }
+            })
+                // --- Naskah Cerita "Memetik Bintang Untukmu" ---
+                .type('Dan bintang itu... adalah kamu.', { delay: 400 })
+                .break({ delay: 800 })
+                .type('Orang bilang memetik bintang itu mustahil,', { delay: 600 })
+                .break({ delay: 800 })
+                .type('tapi aku akan melakukan segalanya...', { delay: 500 })
+                .break({ delay: 1000 })
+                .type('<strong style="font-size: 1.3em; color: var(--primary-color);">...untuk menjagamu agar cahayamu tak pernah padam.</strong>')
+                .go();
+        }
+
+        function balasPesan(nomor, pesan) {
+            window.open(`https://api.whatsapp.com/send?phone=${nomor}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+
+        // untuk security
+
+        document.addEventListener('keydown', function (event) {
+            // Menonaktifkan Ctrl+S (Simpan)
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                alert('Menyimpan halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+P (Cetak)
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                alert('Mencetak halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+U (Lihat Sumber Halaman)
+            if (event.ctrlKey && event.key === 'u') {
+                event.preventDefault();
+                alert('Melihat sumber halaman dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+F dan Ctrl+G (Kolom Pencarian)
+            if (event.ctrlKey && (event.key === 'f' || event.key === 'g')) {
+                event.preventDefault();
+                alert('Fungsi pencarian di halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+C (Salin)
+            if (event.ctrlKey && event.key === 'c') {
+                event.preventDefault();
+                alert('Menyalin konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+A (Pilih Semua)
+            if (event.ctrlKey && event.key === 'a') {
+                event.preventDefault();
+                alert('Memilih semua konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan F12 (Alat Pengembang)
+            if (event.key === 'F12') {
+                event.preventDefault();
+                alert('Alat pengembang dinonaktifkan.');
+            }
+        });
+
+        // Menonaktifkan menu klik kanan (menu konteks)
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            alert('Klik kanan dinonaktifkan.');
+        });
+    </script>
+</body>
+
+</html>

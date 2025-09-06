@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rumah Kita</title>
+
+    <!-- Impor Library & Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;1,700&family=Poppins:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+        :root {
+            --bg-overlay: rgba(30, 30, 30, 0.7);
+            --primary-color: #ffffff;
+            --highlight-color: #f2c94c;
+            --text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.8);
+            --font-title: 'Merriweather', serif;
+            --font-body: 'Poppins', sans-serif;
+        }
+
+        html,
+        body {
+            position: relative;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-body);
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "\00A9  Edy | Cindy";
+            color: hsl(0, 0%, 100%);
+            opacity: .22;
+            font-size: 11pt;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2
+        }
+
+        #background-video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        #background-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-overlay);
+            z-index: -1;
+        }
+
+        .centered-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        #initial-prompt {
+            transition: opacity 1.5s ease;
+        }
+
+        #initial-prompt .icon {
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+
+        #initial-prompt .icon:hover {
+            transform: scale(1.1);
+        }
+
+        #initial-prompt img {
+            width: 80px;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+        }
+
+        #initial-prompt p {
+            margin-top: 20px;
+            font-size: 1.3em;
+            color: white;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .card {
+            position: absolute;
+            width: 90%;
+            max-width: 550px;
+            padding: 40px;
+            box-sizing: border-box;
+            background: transparent;
+            text-align: center;
+            color: var(--primary-color);
+            visibility: hidden;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.95);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .card.active {
+            visibility: visible;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .card h1 {
+            font-family: var(--font-title);
+            font-size: 2.5em;
+            font-weight: 700;
+            font-style: italic;
+            margin: 15px 0;
+            text-shadow: var(--text-shadow);
+        }
+
+        .card .icon-small {
+            width: 110px;
+
+        }
+
+        .card p {
+            font-size: 1.2em;
+            line-height: 1.8;
+            font-weight: 300;
+            text-shadow: var(--text-shadow);
+        }
+
+        .card .next-button {
+            margin-top: 25px;
+            padding: 10px 25px;
+            font-size: 1em;
+            font-weight: 500;
+            color: var(--primary-color);
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .card .next-button:hover {
+            background: var(--primary-color);
+            color: var(--bg-overlay);
+        }
+
+        #card3 {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            max-height: 85vh;
+        }
+
+        #final-text-wrapper {
+            flex-grow: 1;
+            overflow-y: auto;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* PERBAIKAN KUNCI: Style untuk #final-text dipindahkan ke sini */
+        #final-text {
+            font-family: var(--font-body);
+            font-size: 1.2em;
+            line-height: 1.8;
+            font-weight: 300;
+            text-shadow: var(--text-shadow);
+            width: 100%;
+        }
+
+        #reply-button {
+            flex-shrink: 0;
+        }
+
+        @media screen and (max-width: 768px) {
+            .card {
+                padding: 30px 25px;
+            }
+
+            .card h1 {
+                font-size: 2em;
+            }
+
+            .card p {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="background-video-container">
+        <video autoplay muted loop playsinline id="background-video">
+            <source src="10.MP4" type="video/mp4">
+        </video>
+    </div>
+    <div class="bg-overlay"></div>
+
+    <audio id="lagu" src="rumah.mp3" loop></audio>
+
+    <div class="centered-container" id="initial-prompt">
+        <div class="icon" id="buka-pintu">
+            <img src="w.gif" alt="Kunci Rumah">
+        </div>
+        <p style="text-align: center;">Sentuh untuk Membuka Pintu Rumah Kita</p>
+    </div>
+
+    <!-- Konten kartu tetap sama -->
+    <div id="card1" class="card centered-container">
+        <img src="g.gif" alt="kopi" class="icon-small">
+        <h1>Selamat Datang di Rumah,</h1>
+        <p>Bukan tentang dinding atau atapnya, tapi tentang aroma kopi pagi dan tawa kita yang menggema di dalamnya.</p>
+        <button class="next-button" onclick="showCard(2)">Lanjutkan →</button>
+    </div>
+    <div id="card2" class="card centered-container">
+        <img src="d.gif" alt="tanaman" class="icon-small">
+        <h1>Setiap Sudutnya Bercerita,</h1>
+        <p>Dari lelah di penghujung hari hingga mimpi yang kita bangun bersama, semua terasa sempurna karena ada kamu di
+            sini.</p>
+        <button class="next-button" onclick="showCard(3)">Lihat Pesanku →</button>
+    </div>
+
+    <div id="card3" class="card centered-container">
+        <div id="final-text-wrapper">
+            <!-- PERBAIKAN KUNCI: Target diubah dari <div> menjadi <p> -->
+            <p id="final-text"></p>
+        </div>
+        <button class="next-button" id="reply-button" style="visibility: hidden; opacity: 0;"
+            onclick="balasPesan('', 'Aku juga, Sayang. Aku mau tinggal di rumah ini selamanya sama kamu ❤️')">Balas
+            Pesan Ini</button>
+    </div>
+
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+    <script>
+        const initialPrompt = document.getElementById('initial-prompt');
+        const cards = [null, document.getElementById('card1'), document.getElementById('card2'), document.getElementById('card3')];
+        let currentCard = 0;
+
+        document.getElementById('buka-pintu').addEventListener('click', () => {
+            document.getElementById('lagu').play().catch(e => { });
+            initialPrompt.style.opacity = '0';
+            setTimeout(() => {
+                initialPrompt.style.display = 'none';
+                showCard(1);
+            }, 1000);
+        });
+
+        function showCard(index) {
+            if (currentCard > 0) {
+                cards[currentCard].classList.remove('active');
+            }
+            setTimeout(() => {
+                cards[index].classList.add('active');
+                currentCard = index;
+                if (index === 3) {
+                    mulaiMengetik();
+                }
+            }, currentCard > 0 ? 600 : 0);
+        }
+
+        let sudahMengetik = false;
+        function mulaiMengetik() {
+            if (sudahMengetik) return;
+            sudahMengetik = true;
+
+            // PERBAIKAN KUNCI: Perintah .is('p', ...) dihapus total
+            new TypeIt("#final-text", {
+                speed: 70,
+                startDelay: 900,
+                waitUntilVisible: true,
+                afterComplete: (instance) => {
+                    instance.destroy();
+                    const replyButton = document.getElementById('reply-button');
+                    replyButton.style.visibility = 'visible';
+                    replyButton.style.opacity = '1';
+                }
+            })
+                .type('Rumah ini mungkin sederhana,', { delay: 400 })
+                .break({ delay: 500 })
+                .type('tapi kehadiranmu membuatnya menjadi tempat paling indah di dunia.', { delay: 600 })
+                .break({ delay: 800 })
+                .type('Aku tidak butuh apa-apa lagi...', { delay: 500 })
+                .break({ delay: 800 })
+                .type('<strong style="font-family: var(--font-title); font-size: 1.8em; color: var(--highlight-color);">...selama aku bisa tinggal di dalamnya, bersamamu. Selamanya.</strong>')
+                .go();
+        }
+
+        function balasPesan(nomor, pesan) {
+            window.open(`https://api.whatsapp.com/send?phone=${nomor}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+
+        // untuk security
+
+        document.addEventListener('keydown', function (event) {
+            // Menonaktifkan Ctrl+S (Simpan)
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                alert('Menyimpan halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+P (Cetak)
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                alert('Mencetak halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+U (Lihat Sumber Halaman)
+            if (event.ctrlKey && event.key === 'u') {
+                event.preventDefault();
+                alert('Melihat sumber halaman dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+F dan Ctrl+G (Kolom Pencarian)
+            if (event.ctrlKey && (event.key === 'f' || event.key === 'g')) {
+                event.preventDefault();
+                alert('Fungsi pencarian di halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+C (Salin)
+            if (event.ctrlKey && event.key === 'c') {
+                event.preventDefault();
+                alert('Menyalin konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+A (Pilih Semua)
+            if (event.ctrlKey && event.key === 'a') {
+                event.preventDefault();
+                alert('Memilih semua konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan F12 (Alat Pengembang)
+            if (event.key === 'F12') {
+                event.preventDefault();
+                alert('Alat pengembang dinonaktifkan.');
+            }
+        });
+
+        // Menonaktifkan menu klik kanan (menu konteks)
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            alert('Klik kanan dinonaktifkan.');
+        });
+    </script>
+</body>
+
+</html>
