@@ -204,17 +204,17 @@
     <div id="background-video-container">
         <!-- GANTI DI SINI: Link video MP4 senja atau langit malam -->
         <video autoplay muted loop playsinline id="background-video">
-            <source src="qe.MP4" type="video/mp4">
+            <source src="img/qe.MP4" type="video/mp4">
         </video>
     </div>
     <div class="bg-overlay"></div>
 
-    <audio id="lagu" src="night.mp3" loop></audio>
+    <audio id="lagu" src="img/night.mp3" loop></audio>
 
     <div class="centered-container" id="initial-prompt">
         <div class="icon" id="start-story">
             <!-- GANTI DI SINI: Gunakan link online untuk gambar Anda juga -->
-            <img src="mon.png" alt="Bulan">
+            <img src="img/mon.png" alt="Bulan">
         </div>
         <p>Sentuh Rembulan Ini...</p>
     </div>
@@ -228,7 +228,7 @@
                     <p>Malam ini begitu indah, bintang-bintang bersinar terang. Tapi ada yang lebih terang dari
                         semuanya...</p>
                     <!-- GANTI DI SINI: Gunakan link online untuk gambar Anda juga -->
-                    <img class="next-moon" src="moon.png" alt="Lanjutkan" onclick="swiper.slideNext()">
+                    <img class="next-moon" src="img/moon.png" alt="Lanjutkan" onclick="swiper.slideNext()">
                 </div>
             </div>
 
@@ -238,7 +238,7 @@
                     <h1>...Yaitu Matamu</h1>
                     <p>Cahayanya mengalahkan gemerlap bintang manapun, dan kehangatannya melebihi cahaya rembulan.</p>
                     <!-- GANTI DI SINI: Gunakan link online untuk gambar Anda juga -->
-                    <img class="next-moon" src="moon.png" alt="Lanjutkan" onclick="swiper.slideNext()">
+                    <img class="next-moon" src="img/moon.png" alt="Lanjutkan" onclick="swiper.slideNext()">
                 </div>
             </div>
 
@@ -247,7 +247,7 @@
                 <div class="story-content">
                     <p id="final-text"></p>
                     <button id="reply-button"
-                        onclick="balasPesan('6281234567890', 'Malam ini memang indah, apalagi setelah membaca pesanmu ❤️')">Balas
+                        onclick="balasPesan('', 'Malam ini memang indah, apalagi setelah membaca pesanmu ❤️')">Balas
                         Pesan Ini</button>
                 </div>
             </div>
@@ -350,5 +350,6 @@
         });
     </script>
 </body>
+
 
 </html>
