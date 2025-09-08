@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Cinderella-ku</title>
+
+    <!-- Impor Library & Font Baru -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tangerine:wght@700&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+        :root {
+            /* PALET WARNA BARU: Dongeng, Kerajaan, dan Emas */
+            
+            --primary-color: #f7d794; /* Royal Gold */
+            --text-color: #fffefe; /* Teks gelap agar mudah dibaca di atas kertas */
+            --font-title: 'Tangerine', cursive;
+            --font-body: 'EB Garamond', serif;
+           }
+
+        html {
+            position: relative;
+            height: 100%;
+            margin: 0; padding: 0;
+            font-family: var(--font-body);
+            overflow: hidden;
+            background-color: #0a0a1e;
+        }
+        
+        #background-video-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+        #background-video {
+            position: absolute;
+            top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+            filter: brightness(0.8);
+        }
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--bg-overlay);
+            z-index: -1;
+        }
+
+        .centered-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+        }
+        
+        #initial-prompt { transition: opacity 1.5s ease; }
+        #initial-prompt .icon { cursor: pointer; transition: transform 0.5s ease; }
+        #initial-prompt .icon:hover { transform: scale(1.1); }
+        #initial-prompt img {
+            width: 100px;
+            filter: drop-shadow(0 0 20px var(--primary-color));
+        }
+        #initial-prompt p {
+            margin-top: 20px;
+            font-size: 1.3em;
+            color: white;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+        }
+
+        /* KARTU BARU: Gulungan Surat Kerajaan */
+        .card {
+            position: absolute;
+            width: 90%;
+            max-width: 550px;
+            padding: 50px;
+            box-sizing: border-box;
+            background: var(--paper-bg);
+            border-radius: 5px;
+            border: 1px solid #d4b271;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            color: var(--text-color);
+            
+            visibility: hidden; opacity: 0;
+            transform: translate(-50%, -50%) scale(0.95);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .card.active {
+            visibility: visible; opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .card h1 {
+            font-family: var(--font-title);
+            font-size: 5em;
+            font-weight: 700;
+            margin: 15px 0;
+            color: #8d6e63;
+        }
+        .card .icon-small {
+            width: 80px;
+            opacity: 0.6;
+        }
+        .card p {
+            font-size: 1.3em;
+            line-height: 1.8;
+            font-style: italic;
+        }
+        .card .next-button {
+            margin-top: 25px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            font-weight: 300;
+            padding: 10px 25px;
+            color: #8d6e63;
+            background: transparent;
+            border: 1px solid #8d6e63;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .card .next-button:hover { background: #8d6e63; color: white; }
+        
+        #final-text-wrapper { width: 100%; }
+        #final-text { width: 100%; }
+
+        @media screen and (max-width: 768px) {
+            .card { padding: 40px 25px; }
+            .card h1 { font-size: 4em; }
+            .card p { font-size: 1.1em; }
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div id="background-video-container">
+        <!-- GANTI DI SINI: Link video MP4 kastil atau partikel magis -->
+        <video autoplay muted loop playsinline id="background-video">
+            <source src="cin.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="bg-overlay"></div>
+    
+    <audio id="lagu" src="https://audio.jukehost.co.uk/5VfcVfr1D3fIU8m27X85m5HVkPyRIhQr" loop></audio>
+
+    <div class="centered-container" id="initial-prompt">
+        <div class="icon" id="start-story">
+            <!-- GANTI DI SINI: Ikon pembuka (sepatu kaca) -->
+            <img src="cin.gif" alt="Sepatu Kaca">
+        </div>
+        <p>Sebuah Pesan... Untuk Sang Putri</p>
+    </div>
+
+    <!-- Kartu-kartu Cerita -->
+    <div id="card1" class="card centered-container">
+        <img src="cn.gif" alt="mahkota" class="icon-small">
+        <h1>Dahulu Kala,</h1>
+        <p>Ada seorang pangeran yang mencari di seluruh penjuru negeri, bukan untuk mahkota, tapi untuk pemilik hati yang hilang.</p>
+        <button class="next-button" onclick="showCard(2)">Lanjutkan Kisahnya →</button>
+    </div>
+    
+    <div id="card2" class="card centered-container">
+        <img src="cinn.gif" alt="kastil" class="icon-small">
+        <h1>Lalu Kutemukan Dirimu,</h1>
+        <p>Dan sejak saat itu, gubuk sederhanaku terasa lebih megah dari istana manapun, karena engkaulah Ratunya.</p>
+        <button class="next-button" onclick="showCard(3)">Dekrit Hatiku →</button>
+    </div>
+
+    <div id="card3" class="card centered-container">
+        <div id="final-text-wrapper">
+            <p id="final-text"></p>
+        </div>
+        <!-- GANTI DI SINI: Nomor WhatsApp & Pesan Balasan -->
+        <button class="next-button" id="reply-button" style="visibility: hidden; opacity: 0;" onclick="balasPesan('', 'Terima kasih, Pangeranku. Dongeng ini nyata karena ada kamu ❤️')">Balas Pesan Ini</button>
+    </div>
+
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+    <script>
+        const initialPrompt = document.getElementById('initial-prompt');
+        const cards = [null, document.getElementById('card1'), document.getElementById('card2'), document.getElementById('card3')];
+        let currentCard = 0;
+
+        document.getElementById('start-story').addEventListener('click', () => {
+            document.getElementById('lagu').play().catch(e => {});
+            initialPrompt.style.opacity = '0';
+            setTimeout(() => {
+                initialPrompt.style.display = 'none';
+                showCard(1);
+            }, 1000);
+        });
+        
+        function showCard(index) {
+            if (currentCard > 0) {
+                cards[currentCard].classList.remove('active');
+            }
+            setTimeout(() => {
+                cards[index].classList.add('active');
+                currentCard = index;
+                if (index === 3) {
+                    mulaiMengetik();
+                }
+            }, currentCard > 0 ? 600 : 0);
+        }
+        
+        let sudahMengetik = false;
+        function mulaiMengetik() {
+            if (sudahMengetik) return;
+            sudahMengetik = true;
+            new TypeIt("#final-text", {
+                speed: 70,
+                startDelay: 900,
+                waitUntilVisible: true,
+                afterComplete: (instance) => {
+                    instance.destroy();
+                    const replyButton = document.getElementById('reply-button');
+                    replyButton.style.visibility = 'visible';
+                    replyButton.style.opacity = '1';
+                }
+            })
+            // --- Naskah Cerita "Untuk Cinderella-ku" ---
+            .options({ speed: 80 })
+            .type('Dunia boleh punya dongeng tentang Cinderella...', { delay: 400 })
+            .break({ delay: 800 })
+            .type('tapi aku punya kenyataan yang jauh lebih indah.', { delay: 600 })
+            .break({ delay: 1000 })
+            .type('Yaitu hidup bersamamu.', { delay: 500 })
+            .break({ delay: 1000 })
+            .type('<strong style="font-family: var(--font-title); font-size: 2.2em; color: #b98b73;">Kaulah Cinderella-ku, selamanya.</strong>')
+            .go();
+        }
+
+        function balasPesan(nomor, pesan) {
+            window.open(`https://api.whatsapp.com/send?phone=${nomor}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+    </script>
+</body>
+</html>

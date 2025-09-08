@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indahnya Alam Ini Bersamamu</title>
+
+    <!-- Impor Library & Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,700&family=Poppins:wght@300&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --highlight-color: #ffcc80; /* Soft Sunlight */
+            --text-shadow: 0px 2px 15px rgba(0, 0, 0, 1);
+            --font-main: 'Playfair Display', serif;
+            --font-ui: 'Poppins', sans-serif;
+        }
+
+        html{
+            position: relative;
+            height: 100%;
+            margin: 0; padding: 0;
+            font-family: var(--font-main);
+            color: var(--primary-color);
+            overflow: hidden;
+            background-color: var(--bg-color);
+            cursor: none;
+        }
+        
+        /* PERBAIKAN: Satu video utama sebagai latar belakang */
+        #background-video-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+        #background-video {
+            position: absolute;
+            top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+           
+        }
+
+        #brush-cursor {
+            position: fixed;
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 101;
+        }
+        
+        .scene {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            visibility: hidden; opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        .scene.active { visibility: visible; opacity: 1; }
+        
+        /* PERBAIKAN: Latar belakang scene kini menggunakan gambar, bukan video */
+        
+               
+        .story-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            font-style: italic;
+            text-align: center;
+            max-width: 80%;
+            text-shadow: var(--text-shadow);
+            visibility: hidden; opacity: 0;
+            transition: opacity 1s ease 0.5s;
+            z-index: 1;
+        }
+        .story-text.revealed { visibility: visible; opacity: 1; }
+
+        .next-button {
+            position: absolute;
+            bottom: 30px; left: 50%;
+            transform: translateX(-50%);
+            visibility: hidden; opacity: 0;
+            font-family: var(--font-ui);
+            font-size: 1em;
+            font-weight: 300;
+            color: var(--primary-color);
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            border-radius: 50px;
+            padding: 10px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+        .next-button.revealed { visibility: visible; opacity: 1; }
+        .next-button:hover { background: var(--primary-color); color: #333; }
+
+        #initial-prompt {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10; text-align: center;
+        }
+        #initial-prompt p { font-size: 1.3em; font-family: var(--font-ui); }
+
+        @media screen and (max-width: 768px) {
+            .story-text { font-size: 1.5em; }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Satu Video Latar Belakang Utama -->
+    <div id="background-video-container">
+        <!-- GANTI DI SINI: Link video MP4 latar belakang utama -->
+        <video autoplay muted loop playsinline id="background-video">
+            <source src="nh.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="brush-cursor"></div>
+    <audio id="lagu" src="https://audio.jukehost.co.uk/5VfcVfr1D3fIU8m27X85m5HVkPyRIhQr" loop></audio>
+    
+    <div id="initial-prompt">
+        <p>Gunakan jarimu (atau mouse) untuk melukis dengan cahaya</p>
+    </div>
+
+    <!-- Pemandangan / Lukisan dengan Latar Belakang GAMBAR -->
+    <div id="scene1" class="scene active">
+        <!-- GANTI DI SINI: Link gambar latar belakang pertama (gunung) -->
+        <div class="scene-background-image" style="background-image: url('https://i.postimg.cc/L85yV3vM/cozy-home-bg.jpg');"></div>
+        <canvas class="erase-canvas"></canvas>
+        <p class="story-text">Kulihat gunung yang berdiri kokoh, dan aku teringat pada kekuatan cintamu yang tak pernah goyah.</p>
+        <button class="next-button" onclick="nextScene(2)">Lanjutkan Melukis →</button>
+    </div>
+    
+    <div id="scene2" class="scene">
+        <!-- GANTI DI SINI: Link gambar latar belakang kedua (lautan) -->
+        <div class="scene-background-image" style="background-image: url('https://i.postimg.cc/SxP7r4nC/romantic-bg.jpg');"></div>
+        <canvas class="erase-canvas"></canvas>
+        <p class="story-text">Kuselami dalamnya lautan, dan aku tersadar betapa dalamnya perasaanku untukmu.</p>
+        <button class="next-button" onclick="nextScene(3)">Lihat Lukisan Terakhir →</button>
+    </div>
+
+    <div id="scene3" class="scene">
+        <!-- GANTI DI SINI: Link gambar latar belakang ketiga (langit) -->
+        <div class="scene-background-image" style="background-image: url('https://i.postimg.cc/d1P4dKcv/aurora-bg.gif');"></div>
+        <canvas class="erase-canvas"></canvas>
+        <p class="story-text" style="font-size: 1.8em; max-width: 900px;">
+            Semua pemandangan ini memang indah, tapi tidak ada yang bisa menandingi indahnya...
+            <br><br>
+            <strong style="font-size: 1.5em; color: var(--highlight-color);">...duniaku saat bersamamu.</strong>
+        </p>
+        <!-- GANTI DI SINI: Nomor WhatsApp & Pesan Balasan -->
+        <button class="next-button" id="reply-button" onclick="balasPesan('NOMOR_WA_ANDA', 'Lukisan alam semesta kita indah sekali. Terima kasih, Sayang ❤️')">Balas Pesan Ini</button>
+    </div>
+
+    <script>
+        const initialPrompt = document.getElementById('initial-prompt');
+        const brushCursor = document.getElementById('brush-cursor');
+        const scenes = [null, document.getElementById('scene1'), document.getElementById('scene2'), document.getElementById('scene3')];
+        let currentScene = 1;
+        let isDrawing = false;
+        let isStarted = false;
+
+        function setupCanvas(scene) {
+            const canvas = scene.querySelector('.erase-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        scenes.forEach((scene, index) => {
+            if(index > 0) setupCanvas(scene);
+        });
+
+        function handleMove(x, y) {
+            brushCursor.style.left = x + 'px';
+            brushCursor.style.top = y + 'px';
+            if (!isDrawing) return;
+            
+            const scene = scenes[currentScene];
+            const canvas = scene.querySelector('.erase-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, 40, 0, Math.PI * 2, false);
+            ctx.fill();
+            
+            checkReveal(scene);
+        }
+        
+        let revealCheckInterval;
+        function checkReveal(scene) {
+            if (revealCheckInterval) return;
+            revealCheckInterval = setInterval(() => {
+                const canvas = scene.querySelector('.erase-canvas');
+                const ctx = canvas.getContext('2d');
+                const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                let transparentCount = 0;
+                for (let i = 3; i < pixels.length; i += 4) {
+                    if (pixels[i] === 0) {
+                        transparentCount++;
+                    }
+                }
+                const revealPercentage = (transparentCount / (canvas.width * canvas.height)) * 100;
+                if (revealPercentage > 30) {
+                    scene.querySelector('.story-text').classList.add('revealed');
+                    scene.querySelector('.next-button').classList.add('revealed');
+                    clearInterval(revealCheckInterval);
+                    revealCheckInterval = null;
+                }
+            }, 500);
+        }
+
+        function nextScene(index) {
+            if (index > scenes.length - 1) return;
+            if (revealCheckInterval) {
+                clearInterval(revealCheckInterval);
+                revealCheckInterval = null;
+            }
+            scenes[currentScene].classList.remove('active');
+            currentScene = index;
+            setTimeout(() => {
+                 scenes[currentScene].classList.add('active');
+            }, 1000);
+        }
+        
+        function startExperience() {
+            if (isStarted) return;
+            isStarted = true;
+            document.getElementById('lagu').play().catch(e => {});
+            initialPrompt.style.opacity = '0';
+            setTimeout(() => initialPrompt.style.display = 'none', 1500);
+        }
+
+        window.addEventListener('mousedown', () => {
+            startExperience();
+            isDrawing = true;
+        });
+        window.addEventListener('mouseup', () => isDrawing = false);
+        window.addEventListener('mousemove', e => handleMove(e.clientX, e.clientY));
+        
+        window.addEventListener('touchstart', e => {
+            startExperience();
+            isDrawing = true;
+        });
+        window.addEventListener('touchend', () => isDrawing = false);
+        window.addEventListener('touchmove', e => {
+            e.preventDefault();
+            handleMove(e.touches[0].clientX, e.touches[0].clientY);
+        });
+        
+        window.addEventListener('resize', () => {
+             scenes.forEach((scene, index) => {
+                if(index > 0) setupCanvas(scene);
+            });
+        });
+
+        function balasPesan(nomor, pesan) {
+            window.open(`https://api.whatsapp.com/send?phone=${nomor}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+    </script>
+</body>
+</html>

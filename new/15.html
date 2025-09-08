@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terima Kasih Telah Menerimaku</title>
+
+    <!-- Impor Library & Font Baru -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+        :root {
+           
+            --primary-color: #ffffff;
+            --highlight-color: #00c6ff; /* Electric Blue */
+            --text-color: #dcdcdc;
+            --card-bg: rgba(30, 30, 30, 0.5);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --font-main: 'Manrope', sans-serif;
+        }
+
+        html {
+            position: relative;
+            height: 100%;
+            margin: 0; padding: 0;
+            font-family: var(--font-main);
+            background-color: #121212;
+            color: var(--text-color);
+            overflow: hidden;
+        }
+        
+        #background-video-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+        #background-video {
+            position: absolute;
+            top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+           
+        }
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: var(--bg-overlay);
+            z-index: -1;
+        }
+
+        .centered-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+        }
+        
+        #initial-prompt { transition: opacity 1.5s ease; }
+        #initial-prompt .icon { cursor: pointer; animation: float 3s infinite ease-in-out; }
+        #initial-prompt img {
+            width: 100px;
+            filter: drop-shadow(0 0 15px var(--highlight-color));
+        }
+        #initial-prompt p {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: white;
+            font-weight: 300;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* LAYOUT BARU: Split Screen & Reveal Animation */
+        .story-fragment {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden; opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .story-fragment.active { visibility: visible; opacity: 1; }
+        
+        .fragment-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            width: 90%;
+            max-width: 800px;
+        }
+        .fragment-visual {
+            flex: 1;
+            text-align: center;
+        }
+        .fragment-visual img {
+            width: 100px;
+            max-width: 120px;
+            animation: float 4s infinite ease-in-out;
+        }
+        .fragment-text {
+            flex: 2;
+            transform: translateX(20px);
+            opacity: 0;
+            transition: transform 1s ease 0.5s, opacity 1s ease 0.5s;
+        }
+        .story-fragment.active .fragment-text {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .fragment-text h2 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+        }
+        .fragment-text p {
+            font-size: 1.2em;
+            font-weight: 300;
+            line-height: 1.8;
+        }
+        .next-button {
+            margin-top: 25px;
+            font-size: 1em;
+            font-weight: 400;
+            color: var(--highlight-color);
+            background: transparent;
+            border: 1px solid var(--highlight-color);
+            border-radius: 50px;
+            padding: 10px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .next-button:hover { background: var(--highlight-color); color: #121212; }
+        
+        #final-text-container { text-align: center; }
+        #final-text { font-size: 1.8em; line-height: 1.8; }
+        
+        @media screen and (max-width: 768px) {
+            .fragment-content { flex-direction: column; gap: 20px; }
+            .fragment-text { text-align: center; }
+            .fragment-text h2 { font-size: 2em; }
+            .fragment-text p { font-size: 1.1em; }
+            #final-text { font-size: 1.4em; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="background-video-container">
+        <!-- GANTI DI SINI: Link video MP4 partikel atau bokeh -->
+        <video autoplay muted loop playsinline id="background-video">
+            <source src="cd.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="bg-overlay"></div>
+    
+    <audio id="lagu" src="https://audio.jukehost.co.uk/5VfcVfr1D3fIU8m27X85m5HVkPyRIhQr" loop></audio>
+
+    <div class="centered-container" id="initial-prompt">
+        <div class="icon" id="start-story">
+            <!-- GANTI DI SINI: Ikon pembuka (misal: hati, kunci) -->
+            <img src="kis.gif" alt="Hati">
+        </div>
+        <p>Ada Sesuatu yang Perlu Kamu Tahu...</p>
+    </div>
+
+    <!-- Halaman Cerita / Fragmen -->
+    <div id="fragment1" class="story-fragment">
+        <div class="fragment-content">
+            <div class="fragment-visual">
+                <img src="ki.gif" alt="Icon 1">
+            </div>
+            <div class="fragment-text">
+                <h2>Semua Kekuranganku</h2>
+                <p>Untuk semua sisi diriku yang tidak sempurna, kamu tidak pernah memintaku berubah. Kamu justru membantuku untuk menjadi versi terbaik dari diriku.</p>
+                <button class="next-button" onclick="showFragment(2)">Lanjutkan →</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="fragment2" class="story-fragment">
+        <div class="fragment-content">
+            <div class="fragment-visual">
+                <img src="kiss.gif" alt="Icon 2">
+            </div>
+            <div class="fragment-text">
+                <h2>Semua Mimpiku</h2>
+                <p>Untuk semua impianku yang terdengar mustahil, kamulah orang pertama yang selalu percaya dan mengatakan, "Kamu pasti bisa."</p>
+                <button class="next-button" onclick="showFragment(3)">Lihat Pesan Terakhir →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="fragment3" class="story-fragment">
+        <div class="centered-container" id="final-text-container">
+            <p id="final-text"></p>
+            <!-- GANTI DI SINI: Nomor WhatsApp & Pesan Balasan -->
+            <button class="next-button" id="reply-button" style="visibility: hidden; opacity: 0;" onclick="balasPesan('', 'Aku juga berterima kasih karena kamu sudah hadir di hidupku ❤️')">Balas Pesan Ini</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+    <script>
+        const initialPrompt = document.getElementById('initial-prompt');
+        const fragments = [null, document.getElementById('fragment1'), document.getElementById('fragment2'), document.getElementById('fragment3')];
+        let currentFragment = 0;
+
+        document.getElementById('start-story').addEventListener('click', () => {
+            document.getElementById('lagu').play().catch(e => {});
+            initialPrompt.style.opacity = '0';
+            setTimeout(() => {
+                initialPrompt.style.display = 'none';
+                showFragment(1);
+            }, 1000);
+        });
+        
+        function showFragment(index) {
+            if (currentFragment > 0) {
+                fragments[currentFragment].classList.remove('active');
+            }
+            setTimeout(() => {
+                fragments[index].classList.add('active');
+                currentFragment = index;
+                if (index === 3) {
+                    mulaiMengetik();
+                }
+            }, currentFragment > 0 ? 800 : 0);
+        }
+        
+        let sudahMengetik = false;
+        function mulaiMengetik() {
+            if (sudahMengetik) return;
+            sudahMengetik = true;
+            new TypeIt("#final-text", {
+                speed: 60, startDelay: 900, waitUntilVisible: true,
+                afterComplete: (instance) => {
+                    instance.destroy();
+                    const replyButton = document.getElementById('reply-button');
+                    replyButton.style.visibility = 'visible';
+                    replyButton.style.opacity = '1';
+                }
+            })
+            // --- Naskah Cerita "Terima Kasih Sudah Menerimaku Apa Adanya" ---
+            .type('Kamu menerima setiap fragmen diriku,', { delay: 400 })
+            .break({ delay: 800 })
+            .type('dan menyatukannya dengan cintamu.', { delay: 600 })
+            .break({ delay: 1000 })
+            .type('Karena kamu, aku merasa utuh.', { delay: 500 })
+            .break({ delay: 1000 })
+            .type('<strong style="font-size: 1.3em; color: var(--highlight-color);">Terima kasih telah menerimaku, apa adanya.</strong>')
+            .go();
+        }
+
+        function balasPesan(nomor, pesan) {
+            window.open(`https://api.whatsapp.com/send?phone=${nomor}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
