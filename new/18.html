@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kisah Kita di Bangku Ini</title>
+
+    <!-- Impor Library & Font Baru -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,700&family=Lato:wght@300;400&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+        :root {
+            /* PALET WARNA BARU: Senja di Taman Kota */
+            --bg-overlay: rgba(45, 30, 50, 0.65);
+            --primary-color: #f5eadd;
+            /* Soft Cream */
+            --highlight-color: #ffb899;
+            /* Warm Orange Sunset */
+            --text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.8);
+            --font-main: 'Playfair Display', serif;
+            --font-ui: 'Lato', sans-serif;
+        }
+
+        html {
+            position: relative;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            color: var(--primary-color);
+            overflow: hidden;
+            background-color: #2d1e32;
+            cursor: pointer;
+        }
+
+        body::before {
+            content: "\00A9  Edy | Cindy";
+            color: hsl(0, 0%, 100%);
+            opacity: .22;
+            font-size: 11pt;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2
+        }
+
+        #background-video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        #background-video {
+            position: absolute;
+            top: 30%;
+            left: 30%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 30%, var(--bg-overlay) 95%);
+            z-index: -1;
+        }
+
+        .centered-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+        }
+
+        #initial-prompt {
+            transition: opacity 1.5s ease;
+        }
+
+        #initial-prompt .icon {
+            animation: pulse 2.5s infinite ease-in-out;
+        }
+
+        #initial-prompt img {
+            width: 75px;
+            filter: drop-shadow(0 0 12px var(--primary-color));
+        }
+
+        #initial-prompt p {
+            margin-top: 25px;
+            font-size: 1.2em;
+            color: white;
+            font-family: var(--font-ui);
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* KONTENER CERITA BARU */
+        .story-page {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 850px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 1.5s ease, transform 1.5s ease;
+        }
+
+        .story-page.active {
+            visibility: visible;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .story-page:not(.active) {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .story-text {
+            font-size: 2em;
+            font-weight: 400;
+            line-height: 1.8;
+            text-shadow: var(--text-shadow);
+        }
+
+        #final-text {
+            font-size: 2em;
+        }
+
+        #reply-button {
+            visibility: hidden;
+            opacity: 0;
+            margin-top: 45px;
+            font-family: var(--font-ui);
+            font-size: 1.1em;
+            font-weight: 400;
+            padding: 14px 35px;
+            color: var(--primary-color);
+            background: transparent;
+            border: 1.5px solid var(--primary-color);
+            border-radius: 8px;
+            transition: all 0.5s ease 1s;
+            cursor: pointer;
+        }
+
+        #reply-button:hover {
+            background: var(--primary-color);
+            color: #2d1e32;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--highlight-color);
+        }
+
+        @media screen and (max-width: 768px) {
+
+            .story-text,
+            #final-text {
+                font-size: 1.5em;
+            }
+
+            #initial-prompt p {
+                font-size: 1em;
+            }
+
+            #reply-button {
+                padding: 12px 30px;
+                font-size: 1em;
+            }
+        }
+
+        .next-prompt {
+            position: absolute;
+            width: 100%;
+            left: 0;
+            bottom: -65px;
+            font-family: var(--font-ui);
+            font-weight: 300;
+            font-size: 1em;
+            color: rgba(245, 234, 221, 0.7);
+            visibility: hidden;
+            opacity: 0;
+            animation: fade-in-out 3s infinite ease-in-out;
+            transition: visibility 0.5s, opacity 0.5s;
+        }
+
+        .next-prompt.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @keyframes fade-in-out {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="background-video-container">
+        <!-- GANTI DI SINI: Link video MP4 pemandangan taman kota saat senja -->
+        <video autoplay muted loop playsinline id="background-video">
+            <source src="img/rv.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="bg-overlay"></div>
+
+    <!-- GANTI DI SINI: Musik latar piano yang sentimental -->
+    <audio id="lagu" src="img/rv6.mp3" loop></audio>
+
+    <div class="centered-container" id="initial-prompt">
+        <div class="icon" id="start-story">
+            <!-- GANTI DI SINI: Ikon pembuka (bangku taman) -->
+            <img src="img/drt.gif" alt="Bangku Taman">
+        </div>
+        <p>Buka Kenangan Kita</p>
+    </div>
+
+    <!-- Halaman-halaman Cerita -->
+    <div id="page1" class="story-page centered-container">
+        <p class="story-text" id="text1">Di antara riuh kota yang mulai mereda,<br>bangku ini menjadi saksi bisu cerita
+            kita.</p>
+        <p class="next-prompt" id="prompt1">Sentuh untuk melanjutkan...</p>
+    </div>
+    <div id="page2" class="story-page centered-container">
+        <p class="story-text" id="text2">Setiap tawa dan setiap kata yang terucap di sini,<br>melukis kenangan yang tak
+            akan pernah kulupa.</p>
+        <p class="next-prompt" id="prompt2">Sentuh untuk melanjutkan...</p>
+    </div>
+    <div id="page3" class="story-page centered-container">
+        <p id="final-text"></p>
+        <!-- GANTI DI SINI: Nomor WhatsApp & Pesan Balasan -->
+        <button id="reply-button"
+            onclick="balasPesan('', 'Bangku itu masih sama, rasanya juga masih sama. Aku merindukanmu. ❤️')">Kirim
+            Balasan</button>
+    </div>
+
+    <script>
+        const initialPrompt = document.getElementById('initial-prompt');
+        const storyPages = [null, document.getElementById('page1'), document.getElementById('page2'), document.getElementById('page3')];
+        const prompts = [null, document.getElementById('prompt1'), document.getElementById('prompt2')];
+        let currentPage = 0;
+        let isStoryStarted = false;
+        let typeItInstances = [];
+
+        document.body.addEventListener('click', () => {
+            if (!isStoryStarted) {
+                isStoryStarted = true;
+                document.getElementById('lagu').play().catch(e => console.error("Audio play failed:", e));
+                initialPrompt.style.opacity = '0';
+                setTimeout(() => {
+                    initialPrompt.style.display = 'none';
+                    showPage(1);
+                }, 1500);
+            } else {
+                if (currentPage > 0 && currentPage < storyPages.length - 1) {
+                    if (typeItInstances[currentPage] && typeItInstances[currentPage].is('completed')) {
+                        showPage(currentPage + 1);
+                    }
+                }
+            }
+        });
+
+        function showPage(index) {
+            if (currentPage > 0) {
+                storyPages[currentPage].classList.remove('active');
+            }
+            if (prompts[currentPage]) {
+                prompts[currentPage].classList.remove('visible');
+            }
+
+            setTimeout(() => {
+                storyPages[index].classList.add('active');
+                currentPage = index;
+                startTypingForPage(index);
+            }, currentPage > 0 ? 1200 : 0);
+        }
+
+        function startTypingForPage(pageIndex) {
+            let targetId, textContent;
+
+            if (typeItInstances[pageIndex]) {
+                typeItInstances[pageIndex].destroy();
+            }
+
+            switch (pageIndex) {
+                case 1:
+                    targetId = '#text1';
+                    textContent = 'Di antara riuh kota yang mulai mereda,<br>bangku ini menjadi saksi bisu cerita kita.';
+                    break;
+                case 2:
+                    targetId = '#text2';
+                    textContent = 'Setiap tawa dan setiap kata yang terucap di sini,<br>melukis kenangan yang tak akan pernah kulupa.';
+                    break;
+                case 3:
+                    targetId = '#final-text';
+                    textContent = [
+                        'Mungkin bagi orang lain, ini hanyalah bangku biasa.',
+                        'Tapi bagiku...',
+                        'ini adalah tempat di mana aku menemukan kenyamanan,',
+                        'tempat di mana dunia terasa sempurna.',
+                        'Karena di bangku inilah, aku duduk bersamamu.',
+                        '<strong style="font-size: 1.3em; color: var(--highlight-color); display: block; margin-top: 20px;">Dan itu... lebih dari cukup.</strong>'
+                    ];
+                    break;
+            }
+
+            const isFinalPage = pageIndex === 3;
+
+            typeItInstances[pageIndex] = new TypeIt(targetId, {
+                strings: textContent,
+                speed: 75,
+                lifeLike: true,
+                startDelay: 900,
+                waitUntilVisible: true,
+                afterComplete: (instance) => {
+                    if (!isFinalPage) {
+                        if (prompts[pageIndex]) {
+                            prompts[pageIndex].classList.add('visible');
+                        }
+                    } else {
+                        const replyButton = document.getElementById('reply-button');
+                        replyButton.style.visibility = 'visible';
+                        replyButton.style.opacity = '1';
+                    }
+                }
+            }).go();
+        }
+
+        function balasPesan(nomor, pesan) {
+            window.open(`https://api.whatsapp.com/send?phone=${nomor}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+
+        // untuk security
+
+        document.addEventListener('keydown', function (event) {
+            // Menonaktifkan Ctrl+S (Simpan)
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                alert('Menyimpan halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+P (Cetak)
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                alert('Mencetak halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+U (Lihat Sumber Halaman)
+            if (event.ctrlKey && event.key === 'u') {
+                event.preventDefault();
+                alert('Melihat sumber halaman dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+F dan Ctrl+G (Kolom Pencarian)
+            if (event.ctrlKey && (event.key === 'f' || event.key === 'g')) {
+                event.preventDefault();
+                alert('Fungsi pencarian di halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+C (Salin)
+            if (event.ctrlKey && event.key === 'c') {
+                event.preventDefault();
+                alert('Menyalin konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+A (Pilih Semua)
+            if (event.ctrlKey && event.key === 'a') {
+                event.preventDefault();
+                alert('Memilih semua konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan F12 (Alat Pengembang)
+            if (event.key === 'F12') {
+                event.preventDefault();
+                alert('Alat pengembang dinonaktifkan.');
+            }
+        });
+
+        // Menonaktifkan menu klik kanan (menu konteks)
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            alert('Klik kanan dinonaktifkan.');
+        });
+    </script>
+</body>
+
+</html>

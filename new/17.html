@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indahnya Alam Ini Bersamamu</title>
+
+    <!-- Impor Library & Font Baru -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,700&family=Poppins:wght@300&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+        :root {
+            /* PALET WARNA BARU: Senja di Pegunungan */
+            --bg-overlay: rgba(20, 15, 30, 0.6);
+            --primary-color: #ffffff;
+            --highlight-color: #ffd5a1;
+            /* Warm Sunlight */
+            --text-shadow: 0px 3px 15px rgba(0, 0, 0, 0.9);
+            --font-main: 'Cormorant Garamond', serif;
+            --font-ui: 'Poppins', sans-serif;
+        }
+
+        html {
+            position: relative;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            color: var(--primary-color);
+            overflow: hidden;
+            background-color: #140f1e;
+            cursor: pointer;
+        }
+
+        body::before {
+            content: "\00A9  Edy | Cindy";
+            color: hsl(0, 0%, 100%);
+            opacity: .22;
+            font-size: 11pt;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2
+        }
+
+        #background-video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        #background-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 40%, var(--bg-overlay) 100%);
+            z-index: -1;
+        }
+
+        .centered-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+        }
+
+        #initial-prompt {
+            transition: opacity 1.5s ease;
+        }
+
+        #initial-prompt .icon {
+            animation: float 3s infinite ease-in-out;
+        }
+
+        #initial-prompt img {
+            width: 80px;
+            filter: drop-shadow(0 0 15px var(--primary-color));
+        }
+
+        #initial-prompt p {
+            margin-top: 20px;
+            font-size: 1.3em;
+            color: white;
+            font-family: var(--font-ui);
+            font-weight: 300;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* KONTENER CERITA BARU */
+        .story-page {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+        }
+
+        .story-page.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .story-text {
+            font-size: 2.2em;
+            font-style: italic;
+            line-height: 1.7;
+            text-shadow: var(--text-shadow);
+        }
+
+        #final-text {
+            font-size: 2.2em;
+        }
+
+        #reply-button {
+            visibility: hidden;
+            opacity: 0;
+            margin-top: 40px;
+            font-family: var(--font-ui);
+            font-size: 1em;
+            font-weight: 300;
+            padding: 12px 30px;
+            color: var(--primary-color);
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            border-radius: 50px;
+            transition: all 0.5s ease 1s;
+        }
+
+        #reply-button:hover {
+            background: var(--primary-color);
+            color: #333;
+        }
+
+        @media screen and (max-width: 768px) {
+
+            .story-text,
+            #final-text {
+                font-size: 1.6em;
+            }
+        }
+
+        .next-prompt {
+            position: absolute;
+            bottom: -60px;
+            /* Posisi di bawah teks utama */
+            font-family: var(--font-ui);
+            font-weight: 300;
+            font-size: 1em;
+            color: rgba(255, 255, 255, 0.7);
+            visibility: hidden;
+            opacity: 0;
+            animation: blink-fade 2.5s infinite ease-in-out;
+            transition: visibility 0.5s, opacity 0.5s;
+        }
+
+        .next-prompt.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @keyframes blink-fade {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="background-video-container">
+        <!-- GANTI DI SINI: Link video MP4 pemandangan pegunungan -->
+        <video autoplay muted loop playsinline id="background-video">
+            <source src="img/w3.MP4" type="video/mp4">
+        </video>
+    </div>
+    <div class="bg-overlay"></div>
+
+    <!-- GANTI DI SINI: Musik latar yang tenang dan megah -->
+    <audio id="lagu" src="img/rt.mp4" loop></audio>
+
+    <div class="centered-container" id="initial-prompt">
+        <div class="icon" id="start-story">
+            <!-- GANTI DI SINI: Ikon pembuka (puncak gunung) -->
+            <img src="img/vt8.gif" alt="Puncak Gunung">
+        </div>
+        <p>Sentuh Untuk Memulai Pendakian...</p>
+    </div>
+
+    <!-- Halaman-halaman Cerita -->
+    <div id="page1" class="story-page centered-container">
+        <p class="story-text" id="text1">Di hadapan puncak yang megah ini, dunia terasa hening.<br>Namun di dalam
+            hatiku, hanya suaramu yang menggema.</p>
+        <p class="next-prompt" id="prompt1">Sentuh layar untuk melanjutkan...</p>
+    </div>
+    <div id="page2" class="story-page centered-container">
+        <p class="story-text" id="text2">Gunung ini berdiri kokoh, tak tergoyahkan oleh waktu.<br>Seperti cintamu, yang
+            menjadi fondasi dalam hidupku.</p>
+        <p class="next-prompt" id="prompt2">Sentuh layar untuk melanjutkan...</p>
+    </div>
+    <div id="page3" class="story-page centered-container">
+        <p id="final-text"></p>
+        <!-- GANTI DI SINI: Nomor WhatsApp & Pesan Balasan -->
+        <button id="reply-button"
+            onclick="balasPesan('', 'Pemandangannya memang indah, tapi hatiku lebih indah karena ada kamu. ❤️')">Balas
+            Pesan Ini</button>
+    </div>
+
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+    <script>
+        const initialPrompt = document.getElementById('initial-prompt');
+        const storyPages = [null, document.getElementById('page1'), document.getElementById('page2'), document.getElementById('page3')];
+        const prompts = [null, document.getElementById('prompt1'), document.getElementById('prompt2')];
+        let currentPage = 0;
+        let isStoryStarted = false;
+        let typeItInstances = []; // Untuk menyimpan instance TypeIt
+
+        document.body.addEventListener('click', () => {
+            if (!isStoryStarted) {
+                isStoryStarted = true;
+                document.getElementById('lagu').play().catch(e => { });
+                initialPrompt.style.opacity = '0';
+                setTimeout(() => {
+                    initialPrompt.style.display = 'none';
+                    showPage(1);
+                }, 1500);
+            } else {
+                if (currentPage > 0 && currentPage < storyPages.length - 1) {
+                    if (typeItInstances[currentPage] && typeItInstances[currentPage].is('completed')) {
+                        showPage(currentPage + 1);
+                    }
+                }
+            }
+        });
+
+        function showPage(index) {
+            if (currentPage > 0) {
+                storyPages[currentPage].classList.remove('active');
+            }
+            // Sembunyikan prompt sebelumnya
+            if (prompts[currentPage]) {
+                prompts[currentPage].classList.remove('visible');
+            }
+
+            setTimeout(() => {
+                storyPages[index].classList.add('active');
+                currentPage = index;
+                startTypingForPage(index);
+            }, currentPage > 0 ? 1000 : 0);
+        }
+
+        function startTypingForPage(pageIndex) {
+            let targetId, textContent;
+
+            // Hapus instance sebelumnya jika ada
+            if (typeItInstances[pageIndex]) {
+                typeItInstances[pageIndex].destroy();
+            }
+
+            switch (pageIndex) {
+                case 1:
+                    targetId = '#text1';
+                    textContent = 'Di hadapan puncak yang megah ini, dunia terasa hening.<br>Namun di dalam hatiku, hanya suaramu yang menggema.';
+                    break;
+                case 2:
+                    targetId = '#text2';
+                    textContent = 'Gunung ini berdiri kokoh, tak tergoyahkan oleh waktu.<br>Seperti cintamu, yang menjadi fondasi dalam hidupku.';
+                    break;
+                case 3:
+                    targetId = '#final-text';
+                    // --- CERITA TERAKHIR YANG LEBIH PANJANG ---
+                    textContent = [
+                        'Pemandangan ini memang indah, setiap detailnya adalah mahakarya.',
+                        'Tapi saat aku melihatmu...',
+                        'semua keindahan itu seolah memudar.',
+                        'Karena keajaiban terbesar di alam semesta ini bukanlah gunung atau lautan...',
+                        '...tapi menemukanmu.',
+                        '<strong style="font-size: 1.4em; color: var(--highlight-color);">Indahnya alam ini, adalah karena aku melihatnya bersamamu.</strong>'
+                    ];
+                    break;
+            }
+
+            const isFinalPage = pageIndex === 3;
+
+            typeItInstances[pageIndex] = new TypeIt(targetId, {
+                strings: textContent,
+                speed: 80,
+                startDelay: 900,
+                waitUntilVisible: true,
+                afterComplete: (instance) => {
+                    if (!isFinalPage) {
+                        // Tampilkan prompt "Sentuh layar..."
+                        if (prompts[pageIndex]) {
+                            prompts[pageIndex].classList.add('visible');
+                        }
+                    } else {
+                        // Tampilkan tombol balas di halaman terakhir
+                        const replyButton = document.getElementById('reply-button');
+                        replyButton.style.visibility = 'visible';
+                        replyButton.style.opacity = '1';
+                    }
+                }
+            }).go();
+        }
+
+        function balasPesan(nomor, pesan) {
+            window.open(`https://api.whatsapp.com/send?phone=${nomor}&text=${encodeURIComponent(pesan)}`, '_blank');
+        }
+
+        // untuk security
+
+        document.addEventListener('keydown', function (event) {
+            // Menonaktifkan Ctrl+S (Simpan)
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                alert('Menyimpan halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+P (Cetak)
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                alert('Mencetak halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+U (Lihat Sumber Halaman)
+            if (event.ctrlKey && event.key === 'u') {
+                event.preventDefault();
+                alert('Melihat sumber halaman dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+F dan Ctrl+G (Kolom Pencarian)
+            if (event.ctrlKey && (event.key === 'f' || event.key === 'g')) {
+                event.preventDefault();
+                alert('Fungsi pencarian di halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+C (Salin)
+            if (event.ctrlKey && event.key === 'c') {
+                event.preventDefault();
+                alert('Menyalin konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+A (Pilih Semua)
+            if (event.ctrlKey && event.key === 'a') {
+                event.preventDefault();
+                alert('Memilih semua konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan F12 (Alat Pengembang)
+            if (event.key === 'F12') {
+                event.preventDefault();
+                alert('Alat pengembang dinonaktifkan.');
+            }
+        });
+
+        // Menonaktifkan menu klik kanan (menu konteks)
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            alert('Klik kanan dinonaktifkan.');
+        });
+    </script>
+</body>
+
+</html>
