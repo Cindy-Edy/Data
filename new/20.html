@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOVE YOU</title>
+
+    <!-- Impor Library & Font Baru -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/typeit@8.7.0/dist/index.umd.js"></script>
+
+    <style>
+        :root {
+            /* PALET WARNA BARU: Neon Noir */
+            --bg-color: #0d0d1a;
+            --primary-color: #ffffff;
+            --highlight-color-start: #ff00a8;
+            /* Neon Magenta */
+            --highlight-color-end: #ff8d4b;
+            /* Soft Orange */
+            --text-shadow: 0 0 15px rgb(255, 0, 170);
+            --font-display: 'Anton', sans-serif;
+            /* Font besar dan tebal */
+            --font-body: 'Inter', sans-serif;
+        }
+
+        html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            font-family: var(--font-body);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        body::before {
+            content: "\00A9  Edy | Cindy";
+            color: hsl(0, 0%, 100%);
+            opacity: .22;
+            font-size: 11pt;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2
+        }
+
+        #video-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            z-index: -2;
+            object-fit: cover;
+            opacity: 0.5;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 50%, rgba(13, 13, 26, 0.8) 100%);
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+            padding: 0 20px;
+        }
+
+        /* Halaman / Adegan Cerita */
+        .scene {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1.5s ease-in-out, visibility 1.5s;
+        }
+
+        .scene.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Tampilan Awal */
+        #start-scene .icon img {
+            width: 80px;
+            animation: glitch 3s infinite;
+            filter: drop-shadow(0 0 10px var(--highlight-color-start));
+        }
+
+        #start-scene p {
+            font-family: var(--font-body);
+            font-weight: 300;
+            font-size: 1.2em;
+            margin-top: 25px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        @keyframes glitch {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            20% {
+                transform: translate(-3px, 3px);
+            }
+
+            40% {
+                transform: translate(3px, -3px);
+            }
+
+            60% {
+                transform: translate(-3px, -3px);
+            }
+
+            80% {
+                transform: translate(3px, 3px);
+            }
+        }
+
+        /* Gaya Teks Cerita */
+        .story-text {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 10vw, 7rem);
+            /* Ukuran font responsif */
+            line-height: 1.2;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            max-width: 90%;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--highlight-color-start), var(--highlight-color-end), var(--highlight-color-start));
+            background-size: 200% auto;
+            color: #000;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-flow 5s linear infinite;
+        }
+
+        @keyframes gradient-flow {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        #final-text {
+            font-family: var(--font-body);
+            font-weight: 300;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            line-height: 1.8;
+            max-width: 800px;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        /* Tombol Balas */
+        #reply-button {
+            opacity: 0;
+            visibility: hidden;
+            margin-top: 50px;
+            font-family: var(--font-body);
+            font-size: 1.1em;
+            padding: 15px 35px;
+            color: var(--primary-color);
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.4s ease;
+            transform: translateY(20px);
+        }
+
+        #reply-button.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        #reply-button:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px var(--primary-color);
+        }
+
+        /* [BARU] Gaya untuk Prompt "Lanjutkan" */
+        .next-prompt {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-body);
+            font-size: 0.9em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease;
+            animation: pulse 2.5s infinite ease-in-out;
+        }
+
+        .next-prompt.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <video autoplay muted loop playsinline id="video-bg">
+        <source src="img/lov.MP4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+
+    <audio id="music" src="img/love.mp3" loop></audio>
+
+    <!-- Adegan 0: Pembuka -->
+    <div id="start-scene" class="scene active">
+        <div class="container">
+            <div>
+                <div class="icon">
+                    <img src="img/lov.gif" alt="Neon Heart">
+                </div>
+                <p>Touch to feel</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- [DIUBAH] Adegan 1: H1 dikosongkan, ditambahkan prompt -->
+    <div id="scene1" class="scene">
+        <h1 class="story-text" id="text1"></h1>
+        <p class="next-prompt">KLIK UNTUK MELANJUTKAN</p>
+    </div>
+
+    <!-- [DIUBAH] Adegan 2: H1 dikosongkan, ditambahkan prompt -->
+    <div id="scene2" class="scene">
+        <h1 class="story-text" id="text2"></h1>
+        <p class="next-prompt">KLIK UNTUK MELANJUTKAN</p>
+    </div>
+
+    <!-- [DIUBAH] Adegan 3: H1 dikosongkan, ditambahkan prompt -->
+    <div id="scene3" class="scene">
+        <h1 class="story-text gradient-text" id="text3"></h1>
+        <p class="next-prompt">KLIK UNTUK MELANJUTKAN</p>
+    </div>
+
+    <!-- Adegan 4: Penutup -->
+    <div id="scene4" class="scene">
+        <div class="container">
+            <div>
+                <p id="final-text"></p>
+                <button id="reply-button"
+                    onclick="replyAction('', 'You are my everything. Love you too! ❤️‍🔥')">Reply</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // [DIUBAH] Logika JavaScript dirombak total
+        const scenes = document.querySelectorAll('.scene');
+        const music = document.getElementById('music');
+        let currentScene = 0;
+        let isStoryStarted = false;
+        let isTyping = false; // Flag untuk mencegah klik saat mengetik
+
+        function showScene(index) {
+            if (index >= scenes.length) return;
+
+            isTyping = true; // Set flag saat adegan baru dimulai
+
+            // Sembunyikan adegan saat ini
+            scenes[currentScene].classList.remove('active');
+
+            // Sembunyikan prompt lanjutan jika ada
+            const oldPrompt = scenes[currentScene].querySelector('.next-prompt');
+            if (oldPrompt) oldPrompt.classList.remove('visible');
+
+            currentScene = index;
+
+            // Tampilkan adegan baru setelah transisi
+            setTimeout(() => {
+                scenes[currentScene].classList.add('active');
+                startTypingForScene(currentScene);
+            }, 1000); // Waktu harus cocok dengan transisi CSS
+        }
+
+        function startTypingForScene(sceneIndex) {
+            let targetId, textContent, typeSpeed = 150;
+
+            switch (sceneIndex) {
+                case 1:
+                    targetId = '#text1';
+                    textContent = 'DI SETIAP RUANG';
+                    break;
+                case 2:
+                    targetId = '#text2';
+                    textContent = 'DI SETIAP WAKTU';
+                    break;
+                case 3:
+                    targetId = '#text3';
+                    textContent = 'HANYA ADA KAMU';
+                    break;
+                case 4:
+                    targetId = '#final-text';
+                    textContent = `Dunia mungkin penuh dengan miliaran orang, hiruk pikuk, dan segala kerumitannya. Tapi entah bagaimana, di tengah semua itu, duniaku terasa sunyi dan sederhana. Karena fokusku, hatiku, dan segalanya... hanya tertuju padamu. <strong class="gradient-text" style="-webkit-text-fill-color: unset;" >I LOVE YOU.</strong>`;
+                    typeSpeed = 60; // Buat teks terakhir lebih cepat
+                    break;
+                default:
+                    isTyping = false;
+                    return; // Jika bukan adegan cerita, keluar
+            }
+
+            new TypeIt(targetId, {
+                strings: textContent,
+                speed: typeSpeed,
+                lifeLike: true,
+                waitUntilVisible: true,
+                afterComplete: () => {
+                    isTyping = false; // Izinkan klik lagi setelah selesai
+
+                    if (sceneIndex < scenes.length - 1) {
+                        // Tampilkan prompt untuk melanjutkan
+                        const nextPrompt = scenes[sceneIndex].querySelector('.next-prompt');
+                        if (nextPrompt) nextPrompt.classList.add('visible');
+                    } else {
+                        // Tampilkan tombol balas di akhir
+                        const replyButton = document.getElementById('reply-button');
+                        setTimeout(() => replyButton.classList.add('visible'), 500);
+                    }
+                }
+            }).go();
+        }
+
+        document.body.addEventListener('click', () => {
+            if (!isStoryStarted) {
+                isStoryStarted = true;
+                music.play().catch(e => console.error("Audio failed to play:", e));
+                showScene(1); // Mulai dari adegan pertama
+                return;
+            }
+
+            // Hanya lanjutkan ke adegan berikutnya jika tidak sedang mengetik
+            if (!isTyping) {
+                showScene(currentScene + 1);
+            }
+        });
+
+        function replyAction(number, message) {
+            window.open(`https://api.whatsapp.com/send?phone=${number}&text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // untuk security
+
+        document.addEventListener('keydown', function (event) {
+            // Menonaktifkan Ctrl+S (Simpan)
+            if (event.ctrlKey && event.key === 's') {
+                event.preventDefault();
+                alert('Menyimpan halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+P (Cetak)
+            if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                alert('Mencetak halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+U (Lihat Sumber Halaman)
+            if (event.ctrlKey && event.key === 'u') {
+                event.preventDefault();
+                alert('Melihat sumber halaman dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+F dan Ctrl+G (Kolom Pencarian)
+            if (event.ctrlKey && (event.key === 'f' || event.key === 'g')) {
+                event.preventDefault();
+                alert('Fungsi pencarian di halaman ini dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+C (Salin)
+            if (event.ctrlKey && event.key === 'c') {
+                event.preventDefault();
+                alert('Menyalin konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan Ctrl+A (Pilih Semua)
+            if (event.ctrlKey && event.key === 'a') {
+                event.preventDefault();
+                alert('Memilih semua konten dinonaktifkan.');
+            }
+
+            // Menonaktifkan F12 (Alat Pengembang)
+            if (event.key === 'F12') {
+                event.preventDefault();
+                alert('Alat pengembang dinonaktifkan.');
+            }
+        });
+
+        // Menonaktifkan menu klik kanan (menu konteks)
+        document.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            alert('Klik kanan dinonaktifkan.');
+        });
+
+    </script>
+</body>
+
+</html>
