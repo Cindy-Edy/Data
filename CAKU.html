@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Keuangan Pribadi</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- CSS (Menggantikan caku/style.css) -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a73e8;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: #555;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        /* Form Styling */
+        .form-container {
+            background-color: #e8f0fe;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        #transactionForm {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #transactionForm select,
+        #transactionForm input,
+        #transactionForm button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        #transactionType {
+            flex-basis: 15%;
+        }
+
+        #description {
+            flex-basis: 30%;
+            flex-grow: 1;
+        }
+
+        #amount {
+            flex-basis: 20%;
+            flex-grow: 1;
+        }
+
+        #transactionForm button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        #transactionForm button:hover {
+            background-color: #0b59c7;
+        }
+
+        /* Summary Styling */
+        .summary-container {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #d1e3ff;
+        }
+
+        .summary-title {
+            margin-top: 0;
+        }
+
+        .summary-content p {
+            margin: 5px 0;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        #balance {
+            font-weight: 700;
+            color: #1a73e8;
+        }
+
+        /* Table Styling */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        #transactionTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        #transactionTable th,
+        #transactionTable td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        #transactionTable th {
+            background-color: #f8f8f8;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        #transactionTable tbody tr:hover {
+            background-color: #fcfcfc;
+        }
+
+        .income {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .expense {
+            color: #dc3545;
+            font-weight: 500;
+        }
+        
+        /* Tombol Hapus */
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background-color 0.2s;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* Style tombol unduh */
+        .download-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 0 10px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .download-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            #transactionForm {
+                flex-direction: column;
+            }
+
+            #transactionForm select,
+            #transactionForm input,
+            #transactionForm button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Sistem Keuangan Pribadi</h1>
+        <div class="form-container">
+            <h2>Tambah Transaksi</h2>
+            <form id="transactionForm">
+                <select id="transactionType" required>
+                    <option value="Pemasukan">Pemasukan</option>
+                    <option value="Pengeluaran">Pengeluaran</option>
+                </select>
+                <input type="text" id="description" placeholder="Keterangan" required>
+                <input type="number" id="amount" placeholder="Nominal" required min="1">
+                <button type="submit">Tambah</button>
+            </form>
+        </div>
+        <div class="summary-container">
+            <h2 class="summary-title">Ringkasan</h2>
+            <div class="summary-content">
+                <p>Total Pemasukan: <span id="totalIncome" class="income">0</span></p>
+                <p>Total Pengeluaran: <span id="totalExpense" class="expense">0</span></p>
+                <p>Saldo: <span id="balance">0</span></p>
+            </div>
+        </div>
+
+        <h2>Riwayat Transaksi</h2>
+        <button id="downloadButton" class="download-button">Unduh Riwayat (JPG)</button>
+        <div class="table-responsive">
+            <table id="transactionTable">
+                <thead>
+                    <tr>
+                        <th>Waktu</th>
+                        <th>Jenis</th>
+                        <th>Keterangan</th>
+                        <th>Nominal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionBody">
+                    <!-- Data akan dimasukkan di sini oleh JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <!-- Library html2canvas (untuk simpan JPG) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- JavaScript (Menggantikan caku/script.js) -->
+    <script>
+        const STORAGE_KEY = 'financialTransactions';
+        let transactions = [];
+
+        // Helper untuk memformat angka ke mata uang (IDR)
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        };
+
+        // --- 1. Penyimpanan dan Muat Data ---
+        function saveTransactions() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+            } catch (e) {
+                if (e.name === 'QuotaExceededError') {
+                    alert('GAGAL SIMPAN! Penyimpanan di browser (localStorage) penuh. Hapus beberapa transaksi lama.');
+                } else {
+                    console.error("Kesalahan penyimpanan:", e);
+                }
+            }
+        }
+
+        function loadTransactions() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    transactions = JSON.parse(stored);
+                } catch (e) {
+                    console.error("Gagal memuat data dari localStorage:", e);
+                    transactions = []; // Reset jika data korup
+                }
+            }
+            renderTransactions();
+            updateSummary();
+        }
+
+        // --- 2. Update Ringkasan ---
+        function updateSummary() {
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            transactions.forEach(t => {
+                const amount = parseInt(t.amount);
+                if (t.type === 'Pemasukan') {
+                    totalIncome += amount;
+                } else {
+                    totalExpense += amount;
+                }
+            });
+
+            const balance = totalIncome - totalExpense;
+
+            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('totalExpense').textContent = formatCurrency(totalExpense);
+            document.getElementById('balance').textContent = formatCurrency(balance);
+            document.getElementById('balance').style.color = balance >= 0 ? '#1a73e8' : '#dc3545';
+        }
+
+        // --- 3. Render Transaksi ke Tabel ---
+        function renderTransactions() {
+            const body = document.getElementById('transactionBody');
+            body.innerHTML = ''; // Bersihkan tabel
+
+            transactions.forEach((t, index) => {
+                const row = body.insertRow();
+
+                // Kolom Waktu
+                row.insertCell().textContent = t.timestamp;
+                
+                // Kolom Jenis
+                const typeCell = row.insertCell();
+                typeCell.textContent = t.type;
+                typeCell.classList.add(t.type === 'Pemasukan' ? 'income' : 'expense');
+                
+                // Kolom Keterangan
+                row.insertCell().textContent = t.description;
+                
+                // Kolom Nominal
+                const amountCell = row.insertCell();
+                const amount = parseInt(t.amount);
+                const sign = t.type === 'Pemasukan' ? '+' : '-';
+                amountCell.textContent = `${sign} ${formatCurrency(amount)}`;
+                amountCell.classList.add(t.type === 'Pemasukan' ? 'income' : 'expense');
+
+                // Kolom Aksi (Hapus)
+                const actionCell = row.insertCell();
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Hapus';
+                deleteButton.classList.add('delete-btn');
+                deleteButton.onclick = () => deleteTransaction(index);
+                actionCell.appendChild(deleteButton);
+            });
+        }
+        
+        // --- 4. Fungsi Hapus Transaksi ---
+        function deleteTransaction(index) {
+            if (confirm('Anda yakin ingin menghapus transaksi ini?')) {
+                transactions.splice(index, 1);
+                saveTransactions();
+                renderTransactions();
+                updateSummary();
+            }
+        }
+
+        // --- 5. Tambah Transaksi (Form Handler) ---
+        function handleAddTransaction(event) {
+            event.preventDefault();
+
+            const type = document.getElementById('transactionType').value;
+            const description = document.getElementById('description').value.trim();
+            const amount = document.getElementById('amount').value;
+
+            if (!description || !amount || parseFloat(amount) <= 0) {
+                alert("Mohon isi semua kolom dengan benar. Nominal harus lebih dari 0.");
+                return;
+            }
+
+            const newTransaction = {
+                id: Date.now(),
+                timestamp: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                type: type,
+                description: description,
+                amount: amount,
+            };
+
+            transactions.unshift(newTransaction); // Tambahkan di awal array
+            saveTransactions();
+            renderTransactions();
+            updateSummary();
+
+            // Reset Form
+            document.getElementById('transactionForm').reset();
+        }
+
+        // --- 6. Unduh Tabel sebagai Gambar (Fungsi Bawaan User) ---
+        function downloadTableAsImage() {
+            const table = document.getElementById('transactionTable');
+            const downloadButton = document.getElementById('downloadButton');
+            downloadButton.textContent = 'Sedang membuat gambar...';
+            downloadButton.disabled = true;
+
+            // Sembunyikan kolom aksi (hapus) saat membuat gambar
+            const headers = table.querySelectorAll('th');
+            const rows = table.querySelectorAll('tbody tr');
+            const actionHeaderIndex = headers.length - 1;
+            
+            headers[actionHeaderIndex].style.display = 'none';
+            rows.forEach(row => row.cells[actionHeaderIndex].style.display = 'none');
+            
+            // Tangkap elemen tabel
+            html2canvas(table, {
+                useCORS: true,
+                scale: 1.5 // Tingkatkan resolusi
+            }).then(canvas => {
+                // Tampilkan kembali kolom aksi setelah capture
+                headers[actionHeaderIndex].style.display = '';
+                rows.forEach(row => row.cells[actionHeaderIndex].style.display = '');
+
+                const imageURL = canvas.toDataURL('image/jpeg', 0.9);
+                const downloadLink = document.createElement('a');
+                downloadLink.href = imageURL;
+                downloadLink.download = `riwayat_transaksi_${new Date().toISOString().slice(0, 10)}.jpg`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+
+                downloadButton.textContent = 'Unduh Riwayat (JPG)';
+                downloadButton.disabled = false;
+                alert('Riwayat Transaksi berhasil diunduh sebagai gambar JPG.');
+            }).catch(error => {
+                console.error("Gagal membuat gambar:", error);
+                downloadButton.textContent = 'Unduh Riwayat (JPG)';
+                downloadButton.disabled = false;
+                alert('Gagal mengunduh gambar. Cek konsol untuk detail.');
+            });
+        }
+
+        // --- Inisialisasi ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTransactions();
+            document.getElementById('transactionForm').addEventListener('submit', handleAddTransaction);
+            document.getElementById('downloadButton').addEventListener('click', downloadTableAsImage);
+        });
+    </script>
+</body>
+
+</html>```

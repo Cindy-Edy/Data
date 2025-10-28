@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Utama</title>
+    <style>
+    /* Semua layar */
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to bottom right, #a7a8ee, #53c5e7);
+        background-image: url("https://images.pexels.com/photos/1172849/pexels-photo-1172849.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+        background-size: cover;
+        background-position: center;
+    }
+
+    #hero {
+        height: 500px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #hero h1 {
+        font-size: 4em;
+        margin: 10px 0;
+        text-shadow: 2px 1px 5px white;
+    }
+
+    #hero h3 {
+        margin: 10px 0;
+        font-size: 1.5em;
+        text-shadow: 1px 1px 3px white;
+    }
+
+    #hero button {
+        width: 50%;
+        padding: 10px;
+        font-size: 1em;
+        font-weight: bold;
+        background-color: rgb(12, 131, 12);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 1px 1px 7px white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    #hero button:hover {
+        background-color: rgb(10, 100, 10);
+        color: black;
+    }
+
+    .navbar {
+        width: 100%;
+        height: 70px;
+        background-color: #00FFFF;
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 10;
+    }
+
+    .navbar .wrapper .logo {
+        font-family: 'Oleo Script', cursive;
+        font-size: 1.5em;
+        color: black;
+    }
+
+    .navbar .wrapper .nav_menu a {
+        font-family: 'Poiret One', cursive;
+        text-decoration: none;
+        font-weight: bold;
+        color: black;
+        margin: 0 10px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .navbar .wrapper .nav_menu a:hover {
+        background-color: #fff;
+    }
+
+    .flower-decoration {
+        position: absolute;
+        top: 35px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('https://png.pngtree.com/png-clipart/20230913/original/pngtree-rustic-flower-vector-png-image_11068923.png');
+        background-size: 40%;
+        background-repeat: no-repeat;
+        pointer-events: none;
+    }
+
+    /* Tambahan untuk layar kecil (ponsel) */
+    @media (max-width: 768px) {
+        #hero h1 {
+            font-size: 2.5em;
+        }
+
+        #hero h3 {
+            font-size: 1.2em;
+        }
+
+        #hero button {
+            width: 80%;
+        }
+
+        .navbar .wrapper .logo {
+            font-size: 1.2em;
+        }
+
+        .navbar .wrapper .nav_menu a {
+            font-size: 0.9em;
+            padding: 5px;
+        }
+    }
+
+    /* Tambahan untuk layar sangat kecil */
+    @media (max-width: 480px) {
+        #hero h1 {
+            font-size: 2em;
+        }
+
+        #hero h3 {
+            font-size: 1em;
+        }
+
+        .navbar .wrapper {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .navbar .wrapper .nav_menu a {
+            margin: 5px 0;
+        }
+    }
+</style>
+
+</head>
+
+<body>
+
+    <body>
+        <nav class="navbar">
+            <div class="wrapper">
+                <h1 class="logo">Edy & Cindy</h1>
+                <menu class="nav_menu">
+                    <a href="Data/index2.html">Ke Hadiran</a>
+                    <a href="Data/data.html">Data</a>
+                    <a href="Data/index.html">Diundang P</a>
+                    <a href="Data/index1.html">Diundang L </a>
+                </menu>
+            </div>
+        </nav>
+        <section id="hero">
+            <div class="hero_container">
+                <h3>Pernikahan</h3>
+                <h1>Edy & Cindy </h1>
+                <h3>Sampai Akhir Hidup</h3>
+                </div>
+        </section>
+        <div class="flower-decoration"></div>
+    </div>
+    </body>
+
+</html>

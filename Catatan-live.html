@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Catatan</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #a8c0ff, #3f2b96); /* Background gradien */
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            flex-direction: column;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9); /* Semi transparan untuk kesan elegan */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            height: 80vh; /* Membatasi tinggi container */
+            overflow: hidden; /* Untuk menampilkan scrollbar hanya pada tabel */
+            text-align: center;
+        }
+        h1 {
+            text-align: center;
+            color: #3f2b96;
+            margin-bottom: 20px;
+        }
+        .table-wrapper {
+            max-height: 60vh; /* Membatasi tinggi tabel */
+            overflow-y: auto; /* Menambahkan scrollbar vertikal */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #3f2b96;
+            color: white;
+            position: sticky;
+            top: 0; /* Header tabel akan selalu terlihat saat gulir */
+        }
+        tr {
+            background-color: #f9f9f9;
+        }
+        tr:nth-child(even) {
+            background-color: #f1f1f1;
+        }
+        tr:hover {
+            background-color: #e0e0e0;
+        }
+        td {
+            color: #333;
+        }
+        /* Scrollbar custom */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f2b96;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        footer {
+            margin-top: 20px;
+            color: #3f2b96;
+            font-size: 14px;
+            text-align: center;
+        }
+        .total-pcs {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #3f2b96;
+        }
+        .share-buttons {
+            margin-top: 20px;
+        }
+        .share-buttons a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            margin: 0 10px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .share-facebook {
+            background-color: #3b5998;
+        }
+        .share-twitter {
+            background-color: #55acee;
+        }
+        .share-whatsapp {
+            background-color: #25D366;
+        }
+        /* Styling untuk layar kecil (smartphone, terutama Android) */
+@media only screen and (max-width: 600px) {
+    body {
+        padding: 10px; /* Mengurangi padding di sekitar body */
+        display: block; /* Agar layout vertikal lebih baik di layar kecil */
+        height: auto; /* Agar konten tidak terpotong di layar kecil */
+    }
+    .container {
+        padding: 20px; /* Menyesuaikan padding */
+        max-width: 100%; /* Memastikan lebar container 100% dari layar */
+        height: auto; /* Membiarkan tinggi mengikuti konten */
+    }
+    h1 {
+        font-size: 24px; /* Mengurangi ukuran font judul */
+        margin-bottom: 15px; /* Mengurangi margin bawah judul */
+    }
+    table {
+        font-size: 14px; /* Mengurangi ukuran font pada tabel */
+    }
+    th, td {
+        padding: 8px 10px; /* Mengurangi padding dalam tabel */
+        font-size: 14px; /* Mengurangi ukuran font dalam tabel */
+    }
+    .share-buttons a {
+        font-size: 14px; /* Mengurangi ukuran tombol berbagi */
+        padding: 8px 15px; /* Mengurangi padding tombol berbagi */
+    }
+    footer {
+        font-size: 12px; /* Mengurangi ukuran font pada footer */
+        color: #3f2b96;
+    }
+}
+
+/* Styling khusus untuk layar ekstra kecil (di bawah 400px) */
+@media only screen and (max-width: 400px) {
+    h1 {
+        font-size: 20px; /* Lebih kecil untuk layar di bawah 400px */
+    }
+    table {
+        font-size: 12px; /* Ukuran font lebih kecil pada tabel */
+    }
+    .share-buttons a {
+        font-size: 12px; /* Ukuran tombol berbagi lebih kecil */
+        padding: 5px 10px;
+    }
+    th, td {
+        padding: 6px 8px; /* Padding yang lebih kecil untuk tabel */
+    }
+    footer {
+        font-size: 10px; /* Ukuran font lebih kecil untuk footer */
+        color: #3f2b96;
+    }
+}
+
+    </style>
+    <script>
+        async function fetchData() {
+            try {
+                // Tampilkan pesan loading
+                document.getElementById('data-table-body').innerHTML = '<tr><td colspan="5">Memuat data...</td></tr>';
+    
+                // Fetch data dari API Google Sheets
+                const response = await fetch('https://script.google.com/macros/s/AKfycbxvKXhfrsC8n5u_yF0EG6BF2InHpp-8Sdp4X2FWorglAFzV5jIHFk4v2obKEO9nmItZBg/exec');
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+    
+                const data = await response.json();
+    
+                if (!Array.isArray(data)) {
+                    throw new Error('Data yang diterima bukan array');
+                }
+    
+                const tableBody = document.getElementById('data-table-body');
+                tableBody.innerHTML = ''; // Bersihkan tabel sebelum mengisi data baru
+    
+                let totalPCS = 0; // Variabel untuk menghitung total PCS
+    
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+    
+                    const tanggal = item.tanggal ? item.tanggal : 'Tanggal tidak tersedia';
+                    const produk = item.produk ? item.produk : 'Produk tidak tersedia';
+                    const pcs = item.pcs ? parseInt(item.pcs) : 0; // Pastikan nilai PCS berupa angka
+                    const hasilPerbulan = item.hasilPerbulan ? item.hasilPerbulan : '*';
+                    const sudahLunas = item.sudahLunas ? item.sudahLunas : '*';
+    
+                    // Tambahkan nilai PCS ke totalPCS
+                    totalPCS += pcs;
+    
+                    // Buat baris baru dengan data dari item
+                    row.innerHTML = `
+                        <td>${tanggal}</td>
+                        <td>${produk}</td>
+                        <td>${pcs}</td>
+                        <td>${hasilPerbulan}</td>
+                        <td>${sudahLunas}</td>
+                    `;
+    
+                    // Tambahkan baris ke tabel
+                    tableBody.appendChild(row);
+                });
+    
+                // Tampilkan total PCS
+                document.getElementById('total-pcs').textContent = `Total PCS: ${totalPCS}`;
+    
+            } catch (error) {
+                // Tampilkan pesan error jika terjadi masalah saat mengambil data
+                document.getElementById('data-table-body').innerHTML = `<tr><td colspan="5">Error: ${error.message}</td></tr>`;
+                console.error('Error fetching data:', error);
+            }
+        }
+    
+        // Panggil fetchData saat halaman dimuat
+        window.onload = fetchData;
+    </script>
+       
+</head>
+<body>
+    <div class="container">
+        <h1>Data Catatan</h1>
+        <footer>
+            Dibuat oleh: Edy Sahputra
+        </footer>
+        <div class="table-wrapper">
+            <!-- Elemen untuk menampilkan total PCS -->
+        <div class="total-pcs" id="total-pcs">Total PCS: 0</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Produk</th>
+                        <th>Pcs</th>
+                        <th>Hasil Perbulan</th>
+                        <th>Sudah Lunas</th>
+                    </tr>
+                    
+                </thead>
+                <tbody id="data-table-body">
+                    <!-- Data akan dimuat di sini -->
+                </tbody>
+            </table> 
+        <footer>
+            <div class="share-buttons">
+                <a href="https://wa.me/?text=https://supergames19.github.io/supergames/Catatan/" class="share-whatsapp" target="_blank">Share on WhatsApp</a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=https://supergames19.github.io/supergames/Catatan/" class="share-facebook" target="_blank">Share on Facebook</a>
+                <a href="https://twitter.com/intent/tweet?url=https://supergames19.github.io/supergames/Catatan/" class="share-twitter" target="_blank">Share on Twitter</a>                
+            </div>
+        </footer>
+    </div>
+    
+</body>
+</html>

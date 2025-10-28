@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengingat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #e0ffff, #cce0ff);
+            /* Gradient background */
+        }
+
+        .reminder-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 500px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .reminder-item {
+            background-color: #e0f2f7;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            position: relative; /* Untuk memposisikan tombol unduh */
+        }
+
+        .reminder-item i {
+            color: #42a5f5;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .reminder-text {
+            flex: 1;
+        }
+
+        .close-btn {
+            background-color: transparent;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 1.2em;
+            margin-left: 10px;
+        }
+
+        .close-btn:hover {
+            color: #777;
+        }
+
+        .add-reminder {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .add-reminder input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+        }
+
+        .add-reminder input[type="datetime-local"] {
+            margin-left: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .add-reminder button {
+            background-color: #42a5f5;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+
+        .add-reminder button:hover {
+            background-color: #2196f3;
+        }
+
+        .ringing {
+            background-color: #fce4ec;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%,
+            100% {
+                background-color: #f8bbd0;
+            }
+
+            50% {
+                background-color: #fce4ec;
+            }
+        }
+
+        footer {
+            text-align: center;
+            /* Teks di tengah */
+            font-size: bold;
+        }
+
+        /* Tombol unduh */
+        .download-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .download-btn:hover {
+            background-color: #219653;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="reminder-container">
+        <h1><i class="fas fa-bell"></i> Pengingat Saya</h1>
+        <div id="reminder-list"></div>
+        <div class="add-reminder">
+            <input type="text" id="new-reminder" placeholder="Tambah pengingat...">
+            <input type="datetime-local" id="new-reminder-time">
+            <button id="add-btn">Tambah</button>
+        </div>
+    </div>
+    <div>
+        <footer>
+            dibuat oleh edy sahputra
+        </footer>
+    </div>
+
+    <audio id="alarmSound" src="alarm_sound.mp4" loop></audio>
+
+    <script>
+        const reminderList = document.getElementById('reminder-list');
+        const newReminderInput = document.getElementById('new-reminder');
+        const newReminderTimeInput = document.getElementById('new-reminder-time');
+        const addButton = document.getElementById('add-btn');
+        const alarmSound = document.getElementById('alarmSound');
+
+        loadReminders();
+
+        addButton.addEventListener('click', () => {
+            const newReminderText = newReminderInput.value.trim();
+            const newReminderTime = newReminderTimeInput.value;
+
+            if (newReminderText !== "") {
+                addReminder(newReminderText, newReminderTime);
+                newReminderInput.value = "";
+                newReminderTimeInput.value = "";
+            }
+        });
+
+        function addReminder(text, time) {
+            const reminderItem = document.createElement('div');
+            reminderItem.classList.add('reminder-item');
+
+            const timeString = time ? `<input type="datetime-local" value="${time}">` : "";
+
+            reminderItem.innerHTML = `
+                <i class="fas fa-bell"></i>
+                <span class="reminder-text">${text}</span>
+                ${timeString}
+                <button class="close-btn">×</button>
+                <button class="download-btn">Unduh</button>
+            `;
+
+            reminderList.appendChild(reminderItem);
+
+            const closeButton = reminderItem.querySelector('.close-btn');
+            closeButton.addEventListener('click', () => {
+                reminderList.removeChild(reminderItem);
+                saveReminders();
+                reminderItem.classList.remove('ringing');
+                alarmSound.pause();
+                alarmSound.currentTime = 0;
+                clearTimeout(reminderItem.timeoutId);
+            });
+
+            // Tambahkan event listener untuk tombol unduh
+            const downloadButton = reminderItem.querySelector('.download-btn');
+            downloadButton.addEventListener('click', () => {
+                downloadReminderAsImage(text, time);
+            });
+
+            saveReminders();
+
+            if (time) {
+                const now = new Date();
+                const reminderTime = new Date(time);
+
+                if (reminderTime > now) {
+                    const timeDiff = reminderTime.getTime() - now.getTime();
+
+                    const timeoutId = setTimeout(() => {
+                        reminderItem.classList.add('ringing');
+                        alarmSound.play();
+
+                        setTimeout(() => {
+                            reminderItem.classList.remove('ringing');
+                            alarmSound.pause();
+                            alarmSound.currentTime = 0;
+                        }, 10000);
+                    }, timeDiff);
+
+                    reminderItem.timeoutId = timeoutId;
+                }
+            }
+        }
+
+        function saveReminders() {
+            const reminders = [];
+            document.querySelectorAll('.reminder-item').forEach(item => {
+                const text = item.querySelector('.reminder-text').innerText;
+                const timeInput = item.querySelector('input[type="datetime-local"]');
+                const time = timeInput ? timeInput.value : null;
+                reminders.push({
+                    text,
+                    time
+                });
+            });
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+        }
+
+        function loadReminders() {
+            const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            reminders.forEach(reminder => addReminder(reminder.text, reminder.time));
+        }
+
+        // Fungsi untuk mengunduh pengingat sebagai gambar
+        function downloadReminderAsImage(text, time) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = 400; // Lebar canvas
+            canvas.height = 200; // Tinggi canvas
+
+            // Warna latar belakang
+            context.fillStyle = '#e0f2f7';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Teks
+            context.font = '24px Segoe UI';
+            context.fillStyle = '#333';
+            context.textAlign = 'center';
+            context.fillText(text, canvas.width / 2, 80);
+
+            if (time) {
+                const reminderTime = new Date(time);
+                const formattedTime = reminderTime.toLocaleString(); // Format waktu
+
+                context.font = '16px Segoe UI';
+                context.fillText(formattedTime, canvas.width / 2, 130);
+            }
+
+            // Konversi ke URL data
+            const imageURL = canvas.toDataURL('image/jpeg');
+
+            // Buat tautan unduh
+            const downloadLink = document.createElement('a');
+            downloadLink.href = imageURL;
+            downloadLink.download = `pengingat_${text}.jpg`; // Nama file
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+    </script>
+
+</body>
+
+</html>

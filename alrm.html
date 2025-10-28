@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarm Sederhana</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif; /* Font yang lebih modern */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #e0ffff, #cce0ff); /* Gradient background */
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px; /* Lebih banyak padding */
+            border-radius: 12px; /* Border radius lebih rounded */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow lebih halus */
+            text-align: center; /* Teks di tengah */
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        input[type="time"] {
+            padding: 12px;
+            border: 2px solid #a0c0ff; /* Warna border lebih cerah */
+            border-radius: 6px;
+            font-size: 18px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+
+        button {
+            background-color: #4285f4; /* Google blue */
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease; /* Animasi hover */
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #357ae8;
+        }
+
+        #status {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #555;
+        }
+
+        footer {
+        text-align: center; /* Teks di tengah */
+        font-size: bold;
+    }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Alarm Sederhana</h1>
+        <input type="time" id="alarmTime" value="" required>
+        <button onclick="setAlarm()">Set Alarm</button>
+        <div id="status"></div> <div id="debug"></div> </div>
+        <div>
+            <footer>
+                dibuat oleh edy sahputra
+                </footer>
+                </div>
+
+    <script>
+        function setAlarm() {
+            const alarmTime = document.getElementById("alarmTime").value;
+            const statusDiv = document.getElementById("status");
+            const debugDiv = document.getElementById("debug"); // Untuk debugging
+
+            if (!alarmTime) {
+                statusDiv.textContent = "Silakan atur waktu alarm!";
+                return;
+            }
+
+            const now = new Date();
+            const alarm = new Date();
+
+            try {  // Tangkap error parsing
+                alarm.setHours(parseInt(alarmTime.substring(0, 2), 10));
+                alarm.setMinutes(parseInt(alarmTime.substring(3, 5), 10));
+            } catch (error) {
+                statusDiv.textContent = "Format waktu salah!";
+                debugDiv.textContent = "Error: " + error; // Menampilkan error di console dan div debug
+                return;
+            }
+
+
+            alarm.setSeconds(0);
+            alarm.setMilliseconds(0);
+
+            const diff = alarm.getTime() - now.getTime();
+
+            if (diff <= 0) {
+                statusDiv.textContent = "Waktu alarm sudah lewat!";
+                return;
+            }
+
+
+            statusDiv.textContent = "Alarm diatur untuk " + alarm.toLocaleTimeString();
+
+            setTimeout(() => {
+                try {
+                    const audio = new Audio('alarm_sound.mp4');  // Pastikan path file benar!
+                    audio.play().catch(error => {
+                       statusDiv.textContent = "Error memainkan suara: " + error;
+                       debugDiv.textContent = error;
+                       console.error("Error audio:", error);
+
+                    });
+
+                    // Notifikasi (jika diizinkan)
+                     if (Notification.permission === "granted") {
+                        new Notification("Waktu Alarm!");
+                    } else if (Notification.permission !== "denied") {
+                        Notification.requestPermission().then(permission => {
+                            if (permission === "granted") {
+                                new Notification("Waktu Alarm!");
+                            }
+                        });
+                    } else {
+                        alert("Waktu Alarm!"); // Fallback jika notifikasi tidak diizinkan
+                    }
+
+                } catch (error) {
+                    statusDiv.textContent = "Error: " + error;
+                    debugDiv.textContent = "Error: " + error;
+                }
+            }, diff);
+
+            document.getElementById("alarmTime").disabled = true;
+            document.querySelector("button").textContent = "Alarm diatur!";
+        }
+
+
+    </script>
+
+</body>
+</html>

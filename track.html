@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Real-Time Location Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      h1 {
+        color: #333;
+      }
+      #status {
+        margin-top: 20px;
+        color: green;
+      }
+      .button {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .button:disabled {
+        background-color: #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Kirim Lokasi Real-Time</h1>
+    <p>Tekan tombol di bawah untuk mulai Kirim lokasi Anda.</p>
+    <button id="trackButton" class="button" onclick="startTracking()">Mulai Kirim Lokasi</button>
+    <p id="status"></p>
+
+    <script>
+      let intervalId;
+
+      function startTracking() {
+        document.getElementById('trackButton').disabled = true;
+        document.getElementById('status').innerText = "Melacak lokasi...";
+
+        if (navigator.geolocation) {
+          intervalId = setInterval(() => {
+            navigator.geolocation.getCurrentPosition(sendLocationToSheet, showError);
+          }, 5000); // Mengirim lokasi setiap 5 detik
+        } else {
+          alert("Geolocation tidak didukung oleh browser ini.");
+        }
+      }
+
+      function sendLocationToSheet(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        const timestamp = new Date().toISOString();
+
+        // Format lokasi untuk Google Maps
+        const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+        // Kirim data lokasi ke Google Sheets
+        fetch('https://script.google.com/macros/s/AKfycbxe-JCIh5Rk5CnsI_9B2eJ3h_DTMV7NWXCerf6_YXWQ3bY3T97KjkS9bTdy6feJFAVNdA/exec', {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            latitude: latitude,
+            longitude: longitude,
+            timestamp: timestamp,
+            googleMapsUrl: googleMapsUrl
+          })
+        }).then(() => {
+          document.getElementById('status').innerText = `Lokasi terkirim: ${latitude}, ${longitude}`;
+        }).catch((error) => {
+          console.error('Gagal mengirim lokasi:', error);
+        });
+      }
+
+      function showError(error) {
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            alert("Pengguna menolak permintaan Geolocation.");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            alert("Informasi lokasi tidak tersedia.");
+            break;
+          case error.TIMEOUT:
+            alert("Permintaan lokasi kedaluwarsa.");
+            break;
+          case error.UNKNOWN_ERROR:
+            alert("Terjadi kesalahan yang tidak diketahui.");
+            break;
+        }
+      }
+    </script>
+  </body>
+</html>

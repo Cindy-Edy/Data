@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Responsif Keren</title>
+    
+    <!-- Mengimpor Font dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Mengimpor Ikon dari Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <style>
+        /* CSS Variabel untuk tema yang mudah diubah */
+        :root {
+            --bg-dark-space: #1a1a2e;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-primary: #f0f0f0;
+            --text-hover: #ffffff;
+            --accent-glow: rgba(0, 198, 255, 0.2);
+            --accent-color: #00c6ff;
+            --shadow-color: rgba(0, 0, 0, 0.37);
+        }
+
+        /* Style dasar untuk halaman */
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-dark-space);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px; /* Menambahkan padding agar menu tidak menempel di tepi layar kecil */
+        }
+
+        /* Container utama untuk navigasi */
+        .navbar {
+            position: relative;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            padding: 20px; /* Padding seragam untuk semua sisi */
+            border-radius: 50px; /* Bentuk kapsul default untuk desktop */
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
+            transition: all 0.5s ease; /* Transisi untuk perubahan bentuk */
+        }
+
+        /* Styling untuk list menu */
+        .nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        /* Styling untuk link di dalam menu */
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 40px;
+            transition: color 0.4s ease, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 10;
+        }
+
+        .nav-link:hover {
+            color: var(--text-hover);
+        }
+
+        .nav-link .icon {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .nav-link:hover .icon {
+            transform: scale(1.1) rotate(-10deg);
+        }
+        
+        .nav-item.active .nav-link {
+            color: var(--text-hover);
+        }
+
+        /* --- EFEK MAGIC LINE --- */
+        #magic-line {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--accent-glow);
+            border-radius: 40px;
+            box-shadow: 0 0 15px var(--accent-glow);
+            border: 1px solid var(--accent-color);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1;
+        }
+
+        /* ========================================= */
+        /* --- STYLE UNTUK LAYAR HP (RESPONSIF) --- */
+        /* ========================================= */
+        @media (max-width: 768px) {
+            .navbar {
+                width: 90%; /* Lebar navbar di layar kecil */
+                border-radius: 20px; /* Sudut lebih tajam, bukan kapsul */
+                padding: 15px;
+            }
+
+            .nav-menu {
+                flex-direction: column; /* Mengubah layout menjadi vertikal */
+                width: 100%;
+                gap: 5px; /* Jarak antar item di mode vertikal */
+            }
+            
+            .nav-item {
+                width: 100%; /* Setiap item menu mengambil lebar penuh */
+            }
+
+            .nav-link {
+                padding: 12px 20px; /* Padding lebih kecil */
+                font-size: 1rem; /* Ukuran font lebih kecil */
+                justify-content: flex-start; /* Meratakan konten ke kiri */
+            }
+            
+            /* Magic Line untuk mode vertikal */
+            #magic-line {
+                /* Mengubah border dari semua sisi menjadi hanya di kiri */
+                border-top: none;
+                border-right: none;
+                border-bottom: none;
+                border-left: 3px solid var(--accent-color);
+                
+                /* Mengubah bentuk menjadi lebih pipih */
+                border-radius: 0 10px 10px 0; 
+                box-shadow: -5px 0 15px var(--accent-glow); /* Bayangan di kiri */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <ul class="nav-menu">
+            <div id="magic-line"></div>
+            
+            <li class="nav-item active">
+                <a href="index0.html" class="nav-link">
+                    <i class="fas fa-book icon"></i>
+                    <span>Catatan 1</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index1.html" class="nav-link">
+                    <i class="fas fa-book icon"></i>
+                    <span>Catatan 2</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index2.html" class="nav-link">
+                    <i class="fas fa-book icon"></i>
+                    <span>Catatan 3</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#profil" class="nav-link">
+                    <i class="fas fa-user icon"></i>
+                    <span>Profil</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const magicLine = document.getElementById('magic-line');
+            const navbar = document.querySelector('.navbar');
+
+            // Fungsi untuk memindahkan magic line, sekarang mendeteksi orientasi
+            function moveMagicLine(targetItem) {
+                if (!targetItem) return;
+
+                const targetRect = targetItem.getBoundingClientRect();
+                const navbarRect = navbar.getBoundingClientRect();
+
+                // Cek orientasi berdasarkan flex-direction dari .nav-menu
+                const isVertical = window.getComputedStyle(targetItem.parentElement).flexDirection === 'column';
+                
+                if (isVertical) {
+                    // Mode Vertikal (HP)
+                    const top = targetRect.top - navbarRect.top;
+                    magicLine.style.width = '3px'; // Lebar garis penanda di kiri
+                    magicLine.style.height = `${targetRect.height}px`;
+                    magicLine.style.transform = `translateY(${top}px)`;
+                    // Set 'left' secara eksplisit karena mungkin masih ada dari mode desktop
+                    magicLine.style.left = '0';
+                } else {
+                    // Mode Horizontal (Desktop)
+                    const left = targetRect.left - navbarRect.left;
+                    magicLine.style.width = `${targetRect.width}px`;
+                    magicLine.style.height = '100%';
+                    magicLine.style.transform = `translateX(${left}px)`;
+                    // Set 'top' secara eksplisit
+                    magicLine.style.top = '0';
+                }
+            }
+
+            // Fungsi untuk menginisialisasi atau memperbarui posisi magic line
+            function updateActiveLine() {
+                const activeItem = document.querySelector('.nav-item.active');
+                if (activeItem) {
+                    // Menambahkan sedikit jeda agar layout selesai di-render setelah resize
+                    setTimeout(() => moveMagicLine(activeItem), 50);
+                }
+            }
+
+            // Panggil saat halaman dimuat
+            updateActiveLine();
+            
+            // Panggil saat ukuran jendela diubah (misalnya saat rotasi HP)
+            window.addEventListener('resize', updateActiveLine);
+
+            navItems.forEach(item => {
+                // Saat mouse masuk ke item menu
+                item.addEventListener('mouseenter', () => {
+                    moveMagicLine(item);
+                });
+
+                // Saat mouse meninggalkan area menu, kembalikan ke item aktif
+                item.closest('.nav-menu').addEventListener('mouseleave', () => {
+                    updateActiveLine();
+                });
+
+                // Saat item menu diklik
+                item.addEventListener('click', (e) => {
+                    navItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    updateActiveLine();
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagram Kehadiran Tamu</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="w-11/12 max-w-4xl bg-white rounded-2xl shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-center text-gray-700 mb-4">Diagram Kehadiran Tamu Undangan</h1>
+        <canvas id="attendanceChart" class="mb-6"></canvas>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div class="bg-blue-100 p-4 rounded-lg shadow">
+                <h2 class="text-xl font-semibold text-blue-600">Tamu Diundang pihak L</h2>
+                <p class="text-lg text-blue-500">Orang: <span id="maleGuests">0</span></p>
+            </div>
+            <div class="bg-pink-100 p-4 rounded-lg shadow">
+                <h2 class="text-xl font-semibold text-pink-600">Tamu Diundang pihak P</h2>
+                <p class="text-lg text-pink-500">Orang: <span id="femaleGuests">0</span></p>
+            </div>
+            <div class="bg-green-100 p-4 rounded-lg shadow">
+                <h2 class="text-xl font-semibold text-green-600">Tamu yang Hadir</h2>
+                <p class="text-lg text-green-500">Orang: <span id="presentGuests">0</span></p>
+            </div>
+            <div class="bg-gray-200 p-4 rounded-lg shadow">
+                <h2 class="text-xl font-semibold text-gray-600">Tamu Tidak Hadir</h2>
+                <p class="text-lg text-gray-500">Orang: <span id="absentGuests">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data jumlah tamu
+        const data = {
+            male: 120, // Jumlah tamu laki-laki
+            female: 150, // Jumlah tamu perempuan
+            present: 240, // Jumlah tamu yang hadir
+            absent: 30 // Jumlah tamu yang tidak hadir
+        };
+
+        // Update data nominal di halaman
+        document.getElementById('maleGuests').textContent = data.male;
+        document.getElementById('femaleGuests').textContent = data.female;
+        document.getElementById('presentGuests').textContent = data.present;
+        document.getElementById('absentGuests').textContent = data.absent;
+
+        // Konfigurasi chart
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Tamu Diundang pihak L', 'Tamu Diundang pihak P', 'Tamu yang Hadir', 'Tamu Tidak Hadir'],
+                datasets: [{
+                    data: [data.male, data.female, data.present, data.absent],
+                    backgroundColor: ['#60A5FA', '#F472B6', '#34D399', '#D1D5DB'],
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
