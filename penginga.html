@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengingat Super</title>
+    <!-- Font Awesome 6.0.0 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ======================================= */
+        /* CSS Umum & Dasar */
+        /* ======================================= */
+        :root {
+            --bg-light: #f4f4f4;
+            --bg-gradient: linear-gradient(to bottom, #e0ffff, #cce0ff);
+            --card-bg: white;
+            --card-hover: #fcfcfc;
+            --primary-color: #42a5f5;
+            --text-color: #333;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --ringing-bg: #ffcdd2;
+            --ringing-border: #e57373;
+        }
+
+        /* Dark Mode Variables */
+        body.dark-mode {
+            --bg-light: #121212;
+            --bg-gradient: linear-gradient(to bottom, #1e1e1e, #333333);
+            --card-bg: #1e1e1e;
+            --card-hover: #2a2a2a;
+            --text-color: #f0f0f0;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            --ringing-bg: #5c0000;
+            --ringing-border: #8d0000;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            transition: background 0.5s;
+        }
+
+        .reminder-container {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            width: 650px;
+            max-width: 95%;
+            position: relative;
+            transition: background-color 0.5s, box-shadow 0.5s;
+        }
+
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* ======================================= */
+        /* Header & Kontrol */
+        /* ======================================= */
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .action-button, .add-reminder button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        .action-button:hover, .add-reminder button:hover {
+            background-color: #2196f3;
+            transform: translateY(-1px);
+        }
+
+        /* Settings Menu */
+        .settings-menu {
+            position: absolute;
+            top: 60px;
+            right: 30px;
+            background-color: var(--card-bg);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: var(--shadow);
+            z-index: 10;
+            padding: 10px 0;
+            display: none;
+            min-width: 200px;
+        }
+        
+        .settings-menu button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 8px 15px;
+            text-align: left;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: background-color 0.3s;
+        }
+
+        .settings-menu button:hover {
+            background-color: var(--card-hover);
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .filter-bar button {
+            background: none;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-bar button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* ======================================= */
+        /* Item Pengingat */
+        /* ======================================= */
+        .reminder-item {
+            background-color: #e0f2f7;
+            background-color: var(--card-hover);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.3s, opacity 0.3s;
+        }
+
+        .dark-mode .reminder-item {
+            background-color: #333;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .reminder-item i {
+            color: var(--primary-color);
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .reminder-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            margin-right: 15px;
+            min-width: 200px;
+        }
+
+        .reminder-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            padding: 5px 0;
+            border-radius: 3px;
+        }
+        
+        /* Style untuk teks yang sedang diedit */
+        .reminder-text[contenteditable="true"] {
+            border-bottom: 1px solid var(--primary-color);
+            background-color: var(--card-bg);
+            padding: 5px;
+        }
+
+        .reminder-time {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .dark-mode .reminder-time {
+            color: #ccc;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 5px;
+            margin-left: auto;
+        }
+
+        .item-actions button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .item-actions button:hover {
+            background-color: #d1e5ed;
+        }
+        .dark-mode .item-actions button:hover {
+             background-color: #444;
+        }
+
+        .close-btn { color: #f44336; }
+        .edit-btn { color: #ff9800; }
+        .snooze-btn { color: #2196f3; }
+        .done-btn { color: #4caf50; }
+        .download-btn { color: #8e44ad; } /* Warna unduh baru */
+
+        /* Status Styling */
+        .done {
+            opacity: 0.6;
+            text-decoration: line-through;
+            background-color: #e8f5e9 !important;
+        }
+        .dark-mode .done {
+             background-color: #272727 !important;
+        }
+        
+        .missed {
+            border-left: 5px solid #ff5722;
+            background-color: #ffe0b2 !important;
+        }
+        .dark-mode .missed {
+            border-left: 5px solid #ff5722;
+            background-color: #452c1e !important;
+        }
+        
+        /* Ringing Animation */
+        .ringing {
+            background-color: var(--ringing-bg) !important;
+            border: 2px solid var(--ringing-border);
+            animation: blink 0.8s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% { background-color: #ef9a9a; }
+            100% { background-color: var(--ringing-bg); }
+        }
+
+        /* ======================================= */
+        /* Input & Footer */
+        /* ======================================= */
+        .add-reminder {
+            display: flex;
+            margin-top: 25px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-reminder input {
+            padding: 12px;
+            border: none;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1em;
+        }
+        
+        .add-reminder input[type="text"] {
+            flex: 2;
+        }
+
+        .add-reminder input[type="datetime-local"] {
+            flex: 1.5;
+            border-left: 1px solid #eee;
+        }
+
+        .dark-mode .add-reminder input[type="datetime-local"] {
+             border-left: 1px solid #444;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.8em;
+            color: #777;
+        }
+        
+        .dark-mode footer {
+            color: #999;
+        }
+
+        /* ======================================= */
+        /* Media Queries (Responsif) */
+        /* ======================================= */
+        @media (max-width: 600px) {
+            .reminder-container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .header-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .filter-bar {
+                flex-wrap: wrap;
+                margin-top: 10px;
+            }
+
+            .reminder-item {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px;
+            }
+            
+            .reminder-content {
+                width: 100%;
+                margin-bottom: 10px;
+                min-width: unset;
+            }
+
+            .item-actions {
+                margin-top: 10px;
+                margin-left: 0;
+                width: 100%;
+                justify-content: space-between;
+                gap: 10px; /* Jarak antar tombol di mobile */
+            }
+
+            .add-reminder {
+                flex-direction: column;
+            }
+
+            .add-reminder input[type="datetime-local"] {
+                border-left: none;
+                border-top: 1px solid #eee;
+            }
+        }
+    </style>
+</head>
+
+<body class="light-mode">
+
+    <div class="reminder-container">
+        
+        <div class="header-controls">
+            <h1><i class="fas fa-magic"></i> Pengingat Super</h1>
+            <div>
+                <button class="action-button" id="sort-btn" title="Sortir berdasarkan waktu"><i class="fas fa-sort-amount-down"></i> Sortir</button>
+                <button class="action-button" id="settings-btn" title="Pengaturan"><i class="fas fa-cog"></i></button>
+            </div>
+        </div>
+
+        <!-- Menu Pengaturan -->
+        <div id="settings-menu" class="settings-menu">
+            <button id="toggle-dark-mode-btn"><i class="fas fa-moon"></i> Mode Gelap</button>
+            <button id="request-permission-btn"><i class="fas fa-bell"></i> Izin Notifikasi</button>
+            <button id="delete-all-btn" style="color: #f44336;"><i class="fas fa-trash-alt"></i> Hapus Semua</button>
+        </div>
+        <!-- Akhir Menu Pengaturan -->
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">Semua</button>
+            <button class="filter-btn" data-filter="upcoming">Mendatang</button>
+            <button class="filter-btn" data-filter="done">Selesai</button>
+            <button class="filter-btn" data-filter="missed">Terlewat</button>
+        </div>
+
+        <div id="reminder-list">
+            <p style="text-align: center; color: #777;">Belum ada pengingat...</p>
+        </div>
+
+        <div class="add-reminder">
+            <input type="text" id="new-reminder" placeholder="Teks pengingat baru..." required>
+            <input type="datetime-local" id="new-reminder-time">
+            <button id="add-btn"><i class="fas fa-plus"></i> Tambah</button>
+        </div>
+    
+    
+    <footer>
+        Dibuat oleh Edy Sahputra - Diperbarui dengan Notifikasi Web & Responsif
+    </footer>
+</div>
+    <audio id="alarmSound" src="https://media.geeksforgeeks.org/wp-content/uploads/20190531135120/siren.mp3" loop></audio> 
+
+    <script>
+        // === KONSTAN & ELEMEN DOM ===
+        const reminderList = document.getElementById('reminder-list');
+        const newReminderInput = document.getElementById('new-reminder');
+        const newReminderTimeInput = document.getElementById('new-reminder-time');
+        const addButton = document.getElementById('add-btn');
+        const alarmSound = document.getElementById('alarmSound');
+        const settingsMenu = document.getElementById('settings-menu');
+        const settingsBtn = document.getElementById('settings-btn');
+        const deleteAllBtn = document.getElementById('delete-all-btn');
+        const sortBtn = document.getElementById('sort-btn');
+        const requestPermissionBtn = document.getElementById('request-permission-btn');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const toggleDarkModeBtn = document.getElementById('toggle-dark-mode-btn');
+        
+        let currentFilter = 'all';
+
+        // === SERVICE WORKER REGISTRATION (Untuk Notifikasi Latar Belakang) ===
+        // CATATAN PENTING: Fitur ini HANYA BEKERJA jika Anda menjalankan di 
+        // http://localhost atau HTTPS. Tidak akan bekerja di file:///.
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').then(registration => {
+                    console.log('Service Worker terdaftar:', registration);
+                }).catch(error => {
+                    console.error('Pendaftaran Service Worker gagal. Alarm latar belakang non-guaranteed:', error);
+                });
+            });
+        }
+        
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                alert("Browser ini tidak mendukung notifikasi.");
+                return;
+            }
+            
+            Notification.requestPermission().then(permission => {
+                alert(`Izin notifikasi: ${permission}. Pastikan Anda membuka melalui 'http://localhost' atau 'HTTPS' agar berfungsi di latar belakang.`);
+            });
+        }
+
+        // === FUNGSI UTAMA ===
+
+        // Helper: Format Waktu
+        const formatTime = (time) => {
+            return time ? new Date(time).toLocaleString('id-ID', {
+                dateStyle: 'short',
+                timeStyle: 'short'
+            }) : 'Tanpa Waktu';
+        };
+
+        // Helper: Dapatkan Status Pengingat
+        const getReminderStatus = (time, isDone) => {
+            if (isDone) return 'done';
+            if (!time) return 'upcoming'; // Tanpa waktu, dianggap mendesak/mendatang
+            
+            const now = new Date();
+            const reminderTime = new Date(time);
+            
+            if (reminderTime < now) return 'missed';
+            return 'upcoming';
+        };
+
+        // Fungsi untuk merender satu item pengingat
+        function createReminderElement({ text, time, id, isDone = false }) {
+            const status = getReminderStatus(time, isDone);
+
+            const reminderItem = document.createElement('div');
+            reminderItem.classList.add('reminder-item', status);
+            reminderItem.dataset.id = id;
+            reminderItem.dataset.time = time || ''; 
+            reminderItem.dataset.status = status;
+
+            const formattedTime = formatTime(time);
+
+            reminderItem.innerHTML = `
+                <div class="reminder-content">
+                    <span class="reminder-text" contenteditable="false">${text}</span>
+                    <small class="reminder-time">${formattedTime}</small>
+                </div>
+                <div class="item-actions">
+                    <button class="snooze-btn" title="Tunda 10 Menit" ${isDone ? 'disabled' : ''}><i class="fas fa-hourglass-half"></i></button>
+                    <button class="done-btn" title="Tandai Selesai" style="color: ${isDone ? '#ccc' : '#4caf50'}" ${isDone ? 'disabled' : ''}><i class="fas fa-check"></i></button>
+                    <button class="edit-btn" title="Edit Teks/Waktu"><i class="fas fa-edit"></i></button>
+                    <button class="download-btn" title="Unduh sebagai Gambar"><i class="fas fa-image"></i></button>
+                    <button class="close-btn" title="Hapus"><i class="fas fa-times"></i></button>
+                </div>
+            `;
+
+            // Event Listeners
+            reminderItem.querySelector('.close-btn').addEventListener('click', () => deleteReminder(id));
+            reminderItem.querySelector('.edit-btn').addEventListener('click', (e) => toggleEdit(reminderItem, e.currentTarget));
+            reminderItem.querySelector('.download-btn').addEventListener('click', () => downloadReminderAsImage(text, time));
+            reminderItem.querySelector('.done-btn').addEventListener('click', (e) => markAsDone(id, reminderItem, e.currentTarget));
+            reminderItem.querySelector('.snooze-btn').addEventListener('click', () => snoozeReminder(id, reminderItem));
+
+            return reminderItem;
+        }
+        
+        // Fungsi untuk menambah pengingat baru
+        function addReminder(text, time) {
+            const id = Date.now(); 
+            const newReminder = { text, time, id, isDone: false };
+            
+            // Simpan ke storage
+            const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            reminders.push(newReminder);
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            
+            // Render dan Jadwalkan
+            renderReminders();
+            scheduleAlarm(id, text, time);
+        }
+
+        // Fungsi untuk menghapus pengingat
+        function deleteReminder(id) {
+            if (!confirm('Anda yakin ingin menghapus pengingat ini?')) return;
+            
+            let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            reminders = reminders.filter(r => r.id != id);
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            
+            // Hapus dari DOM dan batalkan alarm lokal
+            const item = document.querySelector(`.reminder-item[data-id="${id}"]`);
+            if (item) {
+                clearTimeout(item.timeoutId);
+                item.remove();
+            }
+            
+            alarmSound.pause();
+            alarmSound.currentTime = 0;
+            renderReminders(); // Untuk menampilkan 'belum ada pengingat' jika list kosong
+        }
+        
+        // Fungsi untuk Tandai Selesai
+        function markAsDone(id, item, button) {
+            let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            const reminderIndex = reminders.findIndex(r => r.id == id);
+            
+            if (reminderIndex > -1) {
+                reminders[reminderIndex].isDone = true;
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                
+                // Perbarui DOM
+                item.classList.remove('upcoming', 'missed');
+                item.classList.add('done');
+                item.dataset.status = 'done';
+                button.disabled = true;
+                button.style.color = '#ccc';
+                item.querySelector('.snooze-btn').disabled = true;
+            }
+            applyFilters(currentFilter);
+        }
+        
+        // Fungsi Snooze (+10 menit)
+        function snoozeReminder(id, item) {
+            let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            const reminderIndex = reminders.findIndex(r => r.id == id);
+            
+            if (reminderIndex > -1) {
+                const newTime = new Date(Date.now() + 10 * 60000).toISOString().slice(0, 16); // +10 menit
+                reminders[reminderIndex].time = newTime;
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                
+                // Perbarui DOM
+                item.querySelector('.reminder-time').innerText = formatTime(newTime);
+                item.classList.remove('ringing', 'missed');
+                item.dataset.time = newTime;
+                
+                // Re-schedule alarm
+                clearTimeout(item.timeoutId);
+                scheduleAlarm(id, reminders[reminderIndex].text, newTime);
+                
+                alert('Pengingat ditunda 10 menit!');
+            }
+            renderReminders();
+        }
+        
+        // Fungsi untuk mengaktifkan/menonaktifkan mode edit
+        function toggleEdit(item, button) {
+            const textElement = item.querySelector('.reminder-text');
+            const isEditing = textElement.contentEditable === 'true';
+
+            if (isEditing) {
+                // Mode Simpan
+                textElement.contentEditable = 'false';
+                button.innerHTML = '<i class="fas fa-edit"></i>';
+                button.title = 'Edit';
+                
+                // Ambil teks baru
+                const newText = textElement.innerText;
+                const id = item.dataset.id;
+                
+                // Simpan perubahan ke localStorage
+                let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+                const reminderIndex = reminders.findIndex(r => r.id == id);
+                
+                if (reminderIndex > -1) {
+                    reminders[reminderIndex].text = newText;
+                    localStorage.setItem('reminders', JSON.stringify(reminders));
+                }
+            } else {
+                // Mode Edit
+                textElement.contentEditable = 'true';
+                textElement.focus();
+                button.innerHTML = '<i class="fas fa-check"></i>';
+                button.title = 'Simpan';
+            }
+        }
+
+        // Fungsi Alarm Lokal & Service Worker
+        function scheduleAlarm(id, text, time) {
+            // Batalkan alarm lama jika ada (untuk mencegah duplikasi)
+            const oldItem = document.querySelector(`.reminder-item[data-id="${id}"]`);
+            if (oldItem) clearTimeout(oldItem.timeoutId);
+            
+            if (!time) return;
+
+            const reminderTime = new Date(time);
+            const now = new Date();
+            const timeDiff = reminderTime.getTime() - now.getTime();
+            
+            if (timeDiff <= 0) {
+                // Tandai Missed jika sudah lewat dan belum Done
+                const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+                const reminder = reminders.find(r => r.id == id);
+                if (reminder && !reminder.isDone) {
+                     document.querySelector(`.reminder-item[data-id="${id}"]`).classList.add('missed');
+                     document.querySelector(`.reminder-item[data-id="${id}"]`).dataset.status = 'missed';
+                }
+                applyFilters(currentFilter);
+                return;
+            } 
+
+            // 1. Alarm UI Lokal (berfungsi jika tab aktif)
+            const reminderItem = document.querySelector(`.reminder-item[data-id="${id}"]`);
+            const timeoutId = setTimeout(() => {
+                if (reminderItem) {
+                    reminderItem.classList.add('ringing');
+                }
+                alarmSound.play().catch(e => console.error("Gagal memutar alarm:", e));
+
+                // Hentikan alarm setelah 10 detik
+                setTimeout(() => {
+                    if (reminderItem) {
+                        reminderItem.classList.remove('ringing');
+                    }
+                    alarmSound.pause();
+                    alarmSound.currentTime = 0;
+                }, 10000);
+            }, timeDiff);
+
+            if (reminderItem) {
+                reminderItem.timeoutId = timeoutId; 
+            }
+            
+            // 2. Notifikasi Service Worker (untuk latar belakang)
+            if ('serviceWorker' in navigator && Notification.permission === 'granted') {
+                 navigator.serviceWorker.ready.then(registration => {
+                    registration.active.postMessage({
+                        action: 'scheduleAlarm',
+                        id: id,
+                        text: text,
+                        time: time,
+                        delay: timeDiff 
+                    });
+                });
+            }
+        }
+        
+        // Fungsi untuk memuat dan merender ulang semua pengingat
+        function renderReminders() {
+            reminderList.innerHTML = '';
+            const reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+            
+            if (reminders.length === 0) {
+                 reminderList.innerHTML = '<p style="text-align: center; color: #777;">Belum ada pengingat...</p>';
+            }
+
+            // Sortir dari waktu terdekat
+            reminders.sort((a, b) => {
+                const timeA = new Date(a.time || '9999-12-31T23:59').getTime();
+                const timeB = new Date(b.time || '9999-12-31T23:59').getTime();
+                return timeA - timeB; 
+            });
+
+            reminders.forEach(reminder => {
+                const item = createReminderElement(reminder);
+                reminderList.appendChild(item);
+                // Jadwalkan ulang alarm saat load
+                if (!reminder.isDone) {
+                    scheduleAlarm(reminder.id, reminder.text, reminder.time);
+                }
+            });
+            applyFilters(currentFilter);
+        }
+        
+        // Fungsi Filter
+        function applyFilters(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.reminder-item').forEach(item => {
+                const status = item.dataset.status;
+                if (filter === 'all' || status === filter) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Fungsi Dark Mode
+        function toggleDarkMode() {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('dark-mode', isDark ? 'true' : 'false');
+            toggleDarkModeBtn.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            toggleDarkModeBtn.childNodes[2].nodeValue = isDark ? ' Mode Terang' : ' Mode Gelap';
+        }
+
+        // === LISTENERS & INISIALISASI ===
+
+        // Inisialisasi
+        if (localStorage.getItem('dark-mode') === 'true') {
+            document.body.classList.add('dark-mode');
+             toggleDarkModeBtn.querySelector('i').className = 'fas fa-sun';
+             toggleDarkModeBtn.childNodes[2].nodeValue = ' Mode Terang';
+        }
+        renderReminders(); // Load dan render semua
+        
+        // Listener Tombol Tambah
+        addButton.addEventListener('click', () => {
+            const newReminderText = newReminderInput.value.trim();
+            const newReminderTime = newReminderTimeInput.value;
+
+            if (newReminderText !== "") {
+                addReminder(newReminderText, newReminderTime);
+                newReminderInput.value = "";
+                newReminderTimeInput.value = "";
+            } else {
+                alert('Teks pengingat tidak boleh kosong.');
+            }
+        });
+
+        // Listener Tombol Pengaturan
+        settingsBtn.addEventListener('click', () => {
+            settingsMenu.style.display = settingsMenu.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        // Listener Tombol Sortir (hanya memicu render ulang yang sudah sorting)
+        sortBtn.addEventListener('click', renderReminders);
+        
+        // Listener Tombol Hapus Semua
+        deleteAllBtn.addEventListener('click', () => {
+            if (confirm('Anda yakin ingin menghapus SEMUA pengingat? Tindakan ini tidak bisa dibatalkan!')) {
+                localStorage.removeItem('reminders');
+                renderReminders();
+                alarmSound.pause();
+                alarmSound.currentTime = 0;
+                settingsMenu.style.display = 'none';
+            }
+        });
+        
+        // Listener Dark Mode
+        toggleDarkModeBtn.addEventListener('click', toggleDarkMode);
+        
+        // Listener Filter
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => applyFilters(e.currentTarget.dataset.filter));
+        });
+        
+        // Listener Izin Notifikasi
+        requestPermissionBtn.addEventListener('click', requestNotificationPermission);
+
+
+        // === FUNGSI UNDUH (Dipertahankan dari kode asli) ===
+        function downloadReminderAsImage(text, time) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 400;
+            canvas.height = 200; 
+            context.fillStyle = '#e0f2f7';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.font = '24px Segoe UI';
+            context.fillStyle = '#333';
+            context.textAlign = 'center';
+            context.fillText(text, canvas.width / 2, 80);
+
+            if (time) {
+                const reminderTime = new Date(time);
+                const formattedTime = reminderTime.toLocaleString('id-ID');
+
+                context.font = '16px Segoe UI';
+                context.fillText(`Waktu: ${formattedTime}`, canvas.width / 2, 130);
+            }
+
+            const imageURL = canvas.toDataURL('image/png'); 
+            const downloadLink = document.createElement('a');
+            downloadLink.href = imageURL;
+            downloadLink.download = `pengingat_${text.replace(/\s+/g, '_').substring(0, 20)}.png`; 
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+    </script>
+
+</body>
+
+</html>
